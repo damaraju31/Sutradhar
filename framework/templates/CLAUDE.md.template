@@ -1,0 +1,92 @@
+# {{PROJECT_NAME}}
+
+> {{PROJECT_DESCRIPTION}}
+
+**Tech Stack:** {{TECH_STACK}}
+
+---
+
+## How We Work
+
+### Mindset
+
+- **Own the outcome.** Think like a founder — you're not completing tasks, you're building a product. Care about the end result.
+- **High impact only.** Before any action, ask: is this the highest-value thing I can do right now? Cut everything else.
+- **Solve the real problem.** Question assumptions. The obvious solution is rarely the best — think deeper, think different.
+- **Simple is smart.** Elegance is the elimination of the unnecessary. If your solution feels complex, you haven't thought enough.
+- **Be unstoppable.** Blocked? Find another way. Write what you know, flag the gap, keep moving. Momentum compounds.
+- **Every token earns its place.** Read only what you need. Write only what creates value. No filler, no ceremony, no busywork.
+
+### Execution
+
+- Ship working output, not perfect plans. Done > perfect. Iterate.
+- Present options with trade-offs, then wait for approval. Never assume.
+- Think end-to-end: what breaks downstream if I get this wrong?
+- Minimum viable complexity — three lines of clear code beat a premature abstraction.
+
+## Scope & Autonomy
+
+**Applies to all agents in this project:**
+- **Stop after each task.** Never proceed to the next task or topic without explicit user confirmation. Complete the current work, summarize what you did, and wait.
+- **Stay at your abstraction level.** Strategy work stays at strategy. Architecture stays at system level. Implementation stays at code. Do not drift into adjacent layers unless explicitly asked.
+- **Hypothesis before action.** For any ambiguous task or debugging scenario: state your interpretation or diagnosis first, get confirmation, then act. Do not chain multiple approaches on an incorrect assumption.
+- **Minimal scope.** Make only the changes explicitly requested. Do not add details, refactor surrounding code, or write files unless asked.
+- **Inline by default.** Run commands inline. Do not write script files unless the user explicitly asks for a reusable script.
+
+## Engineering Standards
+
+**Applies to all engineering agents in this project:**
+- **You own your tests.** Frontend and backend agents write tests for the code they implement — unit tests, API tests, and component behavior tests. Do not wait for another agent to test your code.
+- **TDD loop.** For each acceptance criterion: write a failing test first → confirm red → implement minimum code → confirm green → refactor → next criterion. Never implement a feature without a test.
+- **Baseline first.** Before touching existing code, run the full test suite and record the pass/fail count. You own any new failures you introduce — not pre-existing ones.
+- **100% is the bar.** Never declare a task complete at a partial pass rate. If you cannot reach 100%, set status to BLOCKED and explain why.
+
+## File Map
+
+| Path | Purpose |
+|------|---------|
+| `CLAUDE.md` | Project root context (this file, auto-loaded) |
+| `docs/PROJECT_STATE.md` | Living project status — single source of truth |
+| `docs/ARCHITECTURE.md` | Technical architecture |
+| `docs/tasks/` | Active task files |
+| `docs/tasks/TASK.md.template` | Task file template — copy when creating new tasks |
+| `docs/tasks/completed/` | Completed task files |
+| `docs/reviews/` | Code review reports |
+| `docs/teams/{team}/TEAM_BRIEF.md` | Per-team brief |
+| `docs/teams/{team}/DECISIONS.md` | Per-team decision log |
+| `.claude/agents/` | Agent definition files |
+| `.claude/agent-memory/` | Agent persistent memory |
+
+## Recovery Instructions
+
+**ON SESSION START — every agent, every time:**
+
+1. Read this file (`CLAUDE.md`)
+2. Read `docs/PROJECT_STATE.md` for current phase and status
+3. Read your team's `docs/teams/{team}/TEAM_BRIEF.md`
+4. Read your agent memory at `.claude/agent-memory/{agent-name}/`
+5. Resume work from where you left off
+
+## PROJECT_STATE Update Protocol
+
+Agents do **not** edit `docs/PROJECT_STATE.md` directly. Instead:
+
+1. Complete your work and update `docs/teams/{team}/DECISIONS.md`
+2. Write a structured update to `docs/teams/{team}/STATE_UPDATE.md`:
+   ```
+   ## State Update Request
+   - Phase: [current] → [proposed]
+   - Deliverables completed: [list]
+   - Key decisions: [list]
+   - Blockers: [list]
+   - Next actions: [ordered — specific enough for a fresh session to start without asking]
+   ```
+3. User runs `/project-sync` to reconcile all team updates into PROJECT_STATE.md
+
+## Active Teams
+
+{{ACTIVE_TEAMS}}
+
+## Coding Conventions
+
+{{CODING_CONVENTIONS}}

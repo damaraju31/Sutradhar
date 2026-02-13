@@ -1,0 +1,45 @@
+# Team Brief — {{TEAM_NAME}}
+
+**Tier:** {{TEAM_TIER}}
+**Head Agent:** {{HEAD_AGENT}}
+**Last Updated:** {{CREATED_DATE}}
+
+---
+
+## Mission
+
+{{TEAM_MISSION}}
+
+## Scope
+
+**In scope:**
+{{SCOPE_IN}}
+
+**Out of scope:**
+{{SCOPE_OUT}}
+
+## Head Agent
+
+- **Agent:** `{{HEAD_AGENT}}`
+- **Model:** {{HEAD_MODEL}}
+- **Launch:** `claude --agent {{HEAD_AGENT}}`
+
+## Supporting Agents
+
+| Agent | Model | Role |
+|-------|-------|------|
+{{SUPPORTING_AGENTS}}
+
+## Deliverables
+
+{{DELIVERABLES}}
+
+## Current Status
+
+- **Phase:** Not started
+- **Active Work:** None
+- **Blockers:** None
+
+## Dependencies
+
+{{DEPENDENCIES}}

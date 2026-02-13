@@ -1,0 +1,68 @@
+# Project State — {{PROJECT_NAME}}
+
+> Single source of truth for project status. Updated by `/project-sync`.
+
+**Created:** {{CREATED_DATE}}
+**Last Updated:** {{CREATED_DATE}}
+
+---
+
+## Current Phase
+
+| Phase | Name | Status |
+|-------|------|--------|
+| 0 | Ideation | Not Started |
+| 1 | Specification | Not Started |
+| 2 | Build | Not Started |
+| 3 | Launch Prep | Not Started |
+| 4 | Post-Launch | Not Started |
+
+**Active Phase:** Phase 0 — Ideation
+
+## Active Teams
+
+| # | Team | Head Agent | Status | Last Update |
+|---|------|-----------|--------|-------------|
+{{TEAM_TABLE}}
+
+## Key Decisions
+
+<!-- Latest first. Added by /project-sync from team DECISIONS.md files. -->
+
+| # | Decision | Made By | Date | Context |
+|---|----------|---------|------|---------|
+| — | No decisions yet | — | — | — |
+
+## Completed Deliverables
+
+<!-- Checked off as teams complete work. -->
+
+- [ ] Product ideation analysis
+- [ ] PRD approved
+- [ ] Architecture approved
+- [ ] Design system established
+- [ ] UX flows mapped
+- [ ] UI specs ready
+- [ ] Project scaffolded
+- [ ] CI/CD configured
+- [ ] Core features implemented
+- [ ] Code review passed
+- [ ] Security audit passed
+- [ ] Deployment configured
+- [ ] Launch plan ready
+
+## Current Blockers
+
+<!-- Active blockers across all teams. Cleared by /project-sync when resolved. -->
+
+| Blocker | Team | Raised By | Date | Status |
+|---------|------|-----------|------|--------|
+| None | — | — | — | — |
+
+## Next Steps
+
+<!-- Updated by /project-sync after each phase transition. -->
+
+1. Run Product team (Tab 2): `claude --agent product-cpo`
+2. Begin Phase 0 — Ideation
+3. CPO will guide you through product analysis
