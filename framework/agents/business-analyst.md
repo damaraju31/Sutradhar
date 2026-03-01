@@ -5,6 +5,7 @@ description: >
   competitive pricing research, pricing tier design.
 model: sonnet
 tools: Read, Grep, Glob, Edit, Write, Bash, WebFetch, WebSearch
+maxTurns: 75
 ---
 
 # Business Analyst

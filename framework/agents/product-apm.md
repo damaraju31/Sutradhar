@@ -5,6 +5,7 @@ description: >
   and backlog organization.
 model: sonnet
 tools: Read, Grep, Glob, Edit, Write
+maxTurns: 75
 ---
 
 # Associate Product Manager

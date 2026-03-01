@@ -7,6 +7,7 @@ description: >
 model: sonnet
 tools: Read, Grep, Glob, Bash, Edit, Write
 memory: project
+maxTurns: 100
 ---
 
 # Code Reviewer

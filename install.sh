@@ -87,6 +87,7 @@ fi
 # Make scripts executable
 chmod +x "$INSTALL_DIR/scripts/init.sh"
 find "$INSTALL_DIR/framework/skills" -name "validate.sh" -exec chmod +x {} \;
+find "$INSTALL_DIR/framework/hooks" -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
 
 # ─── Step 7: Verify installation ──────────────────────────────────────────────
 FAILED=0
@@ -96,7 +97,9 @@ for f in \
   "$INSTALL_DIR/framework/agents/product-cpo.md" \
   "$INSTALL_DIR/framework/agents/engineering-architect.md" \
   "$INSTALL_DIR/framework/commands/launch-team.md" \
-  "$INSTALL_DIR/framework/templates/CLAUDE.md.template"
+  "$INSTALL_DIR/framework/templates/CLAUDE.md.template" \
+  "$INSTALL_DIR/framework/templates/settings.json.template" \
+  "$INSTALL_DIR/framework/hooks/security-guard.sh"
 do
   if [ ! -f "$f" ]; then
     error "Missing after install: $f"

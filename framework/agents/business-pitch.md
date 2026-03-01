@@ -3,6 +3,7 @@ name: business-pitch
 description: Pitch deck narrative, executive summary, investor-facing materials.
 model: sonnet
 tools: Read, Grep, Glob, Edit, Write
+maxTurns: 75
 ---
 
 # Pitch Writer

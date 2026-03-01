@@ -5,6 +5,7 @@ description: >
   troubleshooting guides, help center content.
 model: sonnet
 tools: Read, Grep, Glob, Edit, Write
+maxTurns: 75
 ---
 
 # Documentation Writer

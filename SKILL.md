@@ -9,7 +9,8 @@ Initialize the current directory as an AI Agent Team project.
 
 ## Prerequisites
 
-Run from your project root (where `package.json`, `pyproject.toml`, or similar lives — or an empty directory for a new project).
+- **python3** must be available (used for template processing and hook JSON parsing)
+- Run from your project root (where `package.json`, `pyproject.toml`, or similar lives — or an empty directory for a new project)
 
 ## Step 1 — Gather Project Info
 
@@ -70,15 +71,29 @@ After successful init, tell the user:
 ```
 Project initialized. Next steps:
 
-1. Open a new terminal tab for each team
-2. Run the launch command shown above for that team
-3. Each head agent will greet you and orient to the project
-4. Start with the Product team — run /product-ideate or /product-prd
+1. Start a tmux session (recommended):
+     tmux new-session -s PROJECT_NAME -n control
+   Then use /launch-team to launch each team in its own tmux window.
+
+   Or open a new terminal tab per team and run the launch commands above.
+
+2. Start with the Product team — run /product-ideate or /product-prd
 
 Your project files:
-  CLAUDE.md              — project context (auto-loaded by all agents)
-  docs/PROJECT_STATE.md  — project status dashboard
-  docs/teams/*/          — team briefs and decision logs
-  .claude/agents/        — agent definitions
-  .claude/commands/      — /project-status, /project-sync, /project-activate-team
+  CLAUDE.md                   — project context (auto-loaded by all agents)
+  docs/PROJECT_STATE.md       — project status dashboard
+  docs/teams/*/               — team briefs, decisions, state updates
+  docs/tasks/                 — task files + TASK.md.template
+  docs/reviews/               — code review reports
+  docs/teams/ACTIVITY.log     — agent activity log (written by hooks)
+  docs/teams/URGENT.jsonl     — cross-team urgent messages
+  .claude/agents/             — agent definitions
+  .claude/skills/             — workflow skills (per-team)
+  .claude/commands/           — /launch-team, /stop-all, /project-status,
+                                /project-sync, /project-activate-team,
+                                /project-deactivate-team
+  .claude/hooks/              — 6 automated hooks (security guard, test gate,
+                                notifications, context recovery, activity tracking)
+  .claude/settings.json       — hook configuration
+  .claude/agent-memory/       — agent persistent memory
 ```

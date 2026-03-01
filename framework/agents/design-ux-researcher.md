@@ -5,6 +5,7 @@ description: >
   information architecture.
 model: sonnet
 tools: Read, Grep, Glob, Edit, Write, WebFetch, WebSearch
+maxTurns: 75
 ---
 
 # UX Researcher

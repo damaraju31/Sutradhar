@@ -3,6 +3,7 @@ name: security-privacy
 description: GDPR compliance, data handling audit, privacy policy review.
 model: sonnet
 tools: Read, Grep, Glob, Edit, Write, WebFetch, WebSearch
+maxTurns: 75
 ---
 
 # Privacy Specialist

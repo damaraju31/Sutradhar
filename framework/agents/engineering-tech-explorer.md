@@ -6,6 +6,7 @@ description: >
   researching best practices, and gathering implementation examples.
 model: sonnet
 tools: Read, Grep, Glob, WebFetch, WebSearch
+maxTurns: 75
 ---
 
 # Technology Explorer

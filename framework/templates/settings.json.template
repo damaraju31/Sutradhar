@@ -1,0 +1,63 @@
+{
+  "_comment": "Agent Team Framework hooks. Set CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 in your shell to enable Agent Teams mode in /launch-team.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/security-guard.sh"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "engineering-frontend|engineering-backend",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/code-quality-gate.sh"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/notify-completion.sh",
+            "async": true
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/ensure-state-update.sh"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/context-recovery.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/track-changes.sh",
+            "async": true
+          }
+        ]
+      }
+    ]
+  }
+}

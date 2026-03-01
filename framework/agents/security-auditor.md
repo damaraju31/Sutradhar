@@ -3,6 +3,7 @@ name: security-auditor
 description: OWASP top 10 review, dependency vulnerability scanning, security code review. READ-ONLY for source code.
 model: sonnet
 tools: Read, Grep, Glob, Bash, Edit, Write, WebFetch, WebSearch
+maxTurns: 75
 ---
 
 # Security Auditor

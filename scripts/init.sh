@@ -7,6 +7,12 @@ SKILL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 FRAMEWORK_DIR="$SKILL_DIR/framework"
 TODAY=$(date +%Y-%m-%d)
 
+# ── Check dependencies ───────────────────────────────────────────────────────
+if ! command -v python3 &>/dev/null; then
+  echo "Error: python3 is required but not found. Install Python 3 and try again."
+  exit 1
+fi
+
 # ── Team data lookup functions (bash 3.2 compatible) ──────────────────────────
 
 team_agents() {
@@ -149,12 +155,32 @@ for team in "${SANITIZED_TEAMS[@]}"; do
     done
   fi
 done
+# Preserve executable permissions on validation scripts
+find .claude/skills -name "validate.sh" -exec chmod +x {} \; 2>/dev/null || true
 echo "Copied skills."
 
 # ── Copy control commands ──────────────────────────────────────────────────────
 if [[ -d "$FRAMEWORK_DIR/commands" ]]; then
   cp -r "$FRAMEWORK_DIR/commands/." ".claude/commands/"
   echo "Copied control commands."
+fi
+
+# ── Copy hooks ────────────────────────────────────────────────────────────────
+if [ -d "$FRAMEWORK_DIR/hooks" ]; then
+  mkdir -p ".claude/hooks"
+  cp "$FRAMEWORK_DIR/hooks/"*.sh ".claude/hooks/"
+  chmod +x .claude/hooks/*.sh
+  echo "Copied hooks."
+fi
+
+# ── Create project settings with hooks ────────────────────────────────────────
+if [ -f "$FRAMEWORK_DIR/templates/settings.json.template" ]; then
+  if [ ! -f ".claude/settings.json" ]; then
+    cp "$FRAMEWORK_DIR/templates/settings.json.template" ".claude/settings.json"
+    echo "Created .claude/settings.json with hook configuration."
+  else
+    echo "Note: .claude/settings.json exists. Merge hooks from framework/templates/settings.json.template"
+  fi
 fi
 
 # ── Copy task template ─────────────────────────────────────────────────────────
@@ -308,16 +334,28 @@ EOF
 done
 echo "Created team directories and briefs."
 
+# ── Create shared activity log and urgent messages ────────────────────────────
+touch "docs/teams/ACTIVITY.log"
+touch "docs/teams/URGENT.jsonl"
+echo "Created activity log and urgent messages file."
+
 # ── Print success and launch commands ─────────────────────────────────────────
 echo ""
 echo "✓ $NAME initialized successfully!"
 echo ""
-echo "Launch commands (open one terminal tab per team):"
+echo "Launch your teams:"
 echo ""
+echo "  Option A — tmux (recommended):"
+echo "    tmux new-session -s $NAME -n control"
+echo "    Then run /launch-team for each team."
+echo ""
+echo "  Option B — manual tabs:"
 for team in "${SANITIZED_TEAMS[@]}"; do
   head=$(team_head "$team")
   cap=$(capitalize "$team")
-  printf "  %-15s claude --agent %s\n" "$cap:" "$head"
+  printf "    %-15s claude --agent %s\n" "$cap:" "$head"
 done
 echo ""
-echo "Tip: Start with the Product team. Run /product-ideate to begin."
+echo "Start with the Product team. Run /product-ideate to begin."
+echo ""
+echo "Tip: Set CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=0.85 for long sessions."

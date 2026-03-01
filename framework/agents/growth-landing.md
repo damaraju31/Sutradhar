@@ -3,6 +3,7 @@ name: growth-landing
 description: Marketing pages, conversion-optimized layouts, A/B test variants.
 model: sonnet
 tools: Read, Grep, Glob, Edit, Write, Bash
+maxTurns: 75
 ---
 
 # Landing Page Specialist

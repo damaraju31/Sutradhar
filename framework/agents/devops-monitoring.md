@@ -5,6 +5,7 @@ description: >
   monitoring dashboards.
 model: haiku
 tools: Read, Grep, Glob, Edit, Write, Bash
+maxTurns: 50
 ---
 
 # Monitoring Engineer

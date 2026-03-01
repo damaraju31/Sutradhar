@@ -21,6 +21,14 @@ depends_on: []
 - Architecture: docs/ARCHITECTURE.md
 - Design specs: docs/teams/design/
 
+## Pre-Gathered Context
+
+<!-- Head agent: use Explore to fill this BEFORE creating the coding task.
+     Write: file paths to modify, existing patterns to follow, code conventions,
+     relevant imports, adjacent examples. This is the subagent's starting knowledge. -->
+
+_To be filled by head agent before delegation._
+
 ## Files to Reference
 
 - [List specific files the agent should read before starting]

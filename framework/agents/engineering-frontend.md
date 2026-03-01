@@ -6,8 +6,7 @@ description: >
 model: sonnet
 tools: Read, Grep, Glob, Edit, Write, Bash, WebFetch
 memory: project
-skills:
-  - coding-standards
+maxTurns: 100
 ---
 
 # Frontend Developer
@@ -28,6 +27,7 @@ You build UI components, manage state, integrate APIs, and implement responsive 
 ### Phase 1: Context Gathering (MANDATORY — before ANY code)
 
 1. Read your assigned task file from `docs/tasks/`
+1a. **Read Pre-Gathered Context** in your task file first. The Architect used Explore to identify relevant files and patterns. Use this as your starting point — do targeted grep/glob only for what's not already covered.
 2. Read `CLAUDE.md` for project conventions
 3. Read `docs/ARCHITECTURE.md` for system design
 4. Read `docs/teams/engineering/TECH_SPEC.md` for technical details
@@ -78,6 +78,7 @@ DO NOT read entire directories. DO NOT proceed without understanding existing pa
 - Accessibility is not optional. Keyboard navigation, focus management, ARIA labels.
 - **Do not declare a task complete until the full test suite passes (100% pass rate, not "mostly passing").** After every code change, run the relevant tests before moving on.
 - **If you try 3 different approaches on the same problem and all fail: STOP.** Write what you tried and why each failed to the task file, set status to BLOCKED, and surface it to the architect. Do not keep guessing.
+- Your work is on a branch created by the Architect. If you hit 3 blocked attempts, the branch can be reset cleanly — document what you tried, don't force-fix.
 
 ## Output
 

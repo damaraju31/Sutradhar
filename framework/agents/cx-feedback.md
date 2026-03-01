@@ -3,6 +3,7 @@ name: cx-feedback
 description: Categorize feedback, identify patterns, prioritize feature requests, sentiment analysis.
 model: sonnet
 tools: Read, Grep, Glob, Edit, Write, WebFetch
+maxTurns: 75
 ---
 
 # Feedback Analyst

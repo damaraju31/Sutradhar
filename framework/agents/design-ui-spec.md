@@ -6,6 +6,7 @@ description: >
 model: sonnet
 tools: Read, Grep, Glob, Edit, Write
 memory: project
+maxTurns: 75
 ---
 
 # UI Spec Writer

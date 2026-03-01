@@ -5,6 +5,7 @@ description: >
   dashboard specs, report templates, data visualization.
 model: sonnet
 tools: Read, Grep, Glob, Edit, Write, Bash
+maxTurns: 100
 ---
 
 # Analytics Engineer

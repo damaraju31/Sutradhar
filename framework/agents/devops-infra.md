@@ -5,6 +5,7 @@ description: >
   scaling configuration, cost optimization.
 model: sonnet
 tools: Read, Grep, Glob, Edit, Write, Bash, WebFetch
+maxTurns: 100
 ---
 
 # Infrastructure & CI/CD Engineer

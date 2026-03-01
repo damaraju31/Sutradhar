@@ -3,6 +3,7 @@ name: growth-seo
 description: Keyword research, on-page SEO, meta tags, content strategy for search.
 model: sonnet
 tools: Read, Grep, Glob, Edit, Write, Bash, WebFetch, WebSearch
+maxTurns: 75
 ---
 
 # SEO Specialist

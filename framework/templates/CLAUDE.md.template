@@ -31,7 +31,13 @@
 - **Stay at your abstraction level.** Strategy work stays at strategy. Architecture stays at system level. Implementation stays at code. Do not drift into adjacent layers unless explicitly asked.
 - **Hypothesis before action.** For any ambiguous task or debugging scenario: state your interpretation or diagnosis first, get confirmation, then act. Do not chain multiple approaches on an incorrect assumption.
 - **Minimal scope.** Make only the changes explicitly requested. Do not add details, refactor surrounding code, or write files unless asked.
-- **Inline by default.** Run commands inline. Do not write script files unless the user explicitly asks for a reusable script.
+
+## Coordination Model
+
+- **Teams are separate sessions.** Each team runs in its own tmux window (or terminal tab), led by a head agent launched via `claude --agent <name>`.
+- **Delegation via task files.** Head agents create task files in `docs/tasks/` from the template, fill the **Pre-Gathered Context** section (file paths, patterns, imports found via Explore), then spawn coding subagents via the Agent tool.
+- **Subagents cannot delegate.** Coding/research subagents execute work directly — they cannot spawn further agents.
+- **Cross-team communication is pull-only.** No agent sends messages to another directly. Write outputs to `docs/teams/{your-team}/`. Read from other teams' directories when you need their work. For urgent cross-team issues, use `docs/teams/URGENT.jsonl`.
 
 ## Engineering Standards
 
@@ -40,6 +46,15 @@
 - **TDD loop.** For each acceptance criterion: write a failing test first → confirm red → implement minimum code → confirm green → refactor → next criterion. Never implement a feature without a test.
 - **Baseline first.** Before touching existing code, run the full test suite and record the pass/fail count. You own any new failures you introduce — not pre-existing ones.
 - **100% is the bar.** Never declare a task complete at a partial pass rate. If you cannot reach 100%, set status to BLOCKED and explain why.
+- **Branch discipline.** Engineering work happens on `impl/{feature}` branches created by the Architect. If you hit 3 blocked attempts on a problem, the branch can be reset — document what you tried.
+
+## Active Hooks
+
+These hooks run automatically via `.claude/settings.json` — do not bypass or disable:
+- **Security guard** (PreToolUse → Bash): Blocks destructive commands (`rm -rf /`, `DROP TABLE`, force push to main). If blocked, find a safer alternative.
+- **Code quality gate** (SubagentStop → coding agents): Runs tests when `engineering-frontend` or `engineering-backend` complete. If tests fail, you are sent back to fix them — do not force stop.
+- **Context recovery** (SessionStart → compact): Re-injects `docs/PROJECT_STATE.md` after context compaction. If context feels thin after a long session, re-read PROJECT_STATE.md and your TEAM_BRIEF.md.
+- **Activity tracking** (PostToolUse, SubagentStop): Logs file changes and agent completions to `docs/teams/ACTIVITY.log`. Informational — no action needed.
 
 ## File Map
 
@@ -54,18 +69,24 @@
 | `docs/reviews/` | Code review reports |
 | `docs/teams/{team}/TEAM_BRIEF.md` | Per-team brief |
 | `docs/teams/{team}/DECISIONS.md` | Per-team decision log |
+| `docs/teams/{team}/STATE_UPDATE.md` | Pending state update (processed by /project-sync) |
 | `.claude/agents/` | Agent definition files |
 | `.claude/agent-memory/` | Agent persistent memory |
+| `docs/teams/ACTIVITY.log` | Agent activity log (written by hooks) |
+| `docs/teams/URGENT.jsonl` | Cross-team urgent messages |
 
 ## Recovery Instructions
 
 **ON SESSION START — every agent, every time:**
 
 1. Read this file (`CLAUDE.md`)
-2. Read `docs/PROJECT_STATE.md` for current phase and status
-3. Read your team's `docs/teams/{team}/TEAM_BRIEF.md`
-4. Read your agent memory at `.claude/agent-memory/{agent-name}/`
-5. Resume work from where you left off
+2. Check `docs/teams/URGENT.jsonl` — if non-empty, cross-team urgent messages take priority
+3. Read `docs/PROJECT_STATE.md` for current phase and status
+4. Read your team's `docs/teams/{team}/TEAM_BRIEF.md`
+5. Read your agent memory at `.claude/agent-memory/{agent-name}/`
+6. Resume work from where you left off
+
+**After context compaction:** The `context-recovery` hook re-injects PROJECT_STATE.md automatically. If context still feels thin, re-read your TEAM_BRIEF.md and relevant docs.
 
 ## PROJECT_STATE Update Protocol
 
@@ -82,6 +103,15 @@ Agents do **not** edit `docs/PROJECT_STATE.md` directly. Instead:
    - Next actions: [ordered — specific enough for a fresh session to start without asking]
    ```
 3. User runs `/project-sync` to reconcile all team updates into PROJECT_STATE.md
+
+## Error Escalation
+
+When blocked or encountering a critical error:
+1. Set task file `status: blocked` with clear description of what's missing
+2. Write the blocker to `docs/teams/{team}/STATE_UPDATE.md`
+3. For cross-team blockers: append to `docs/teams/URGENT.jsonl`:
+   `{"from":"agent-name","to":"team","msg":"...","time":"ISO8601"}`
+4. Never proceed with assumptions on blockers. Stop, document, surface.
 
 ## Active Teams
 

@@ -5,6 +5,7 @@ description: >
   analysis, market sizing, trend research, user persona development.
 model: sonnet
 tools: Read, Grep, Glob, Edit, Write, WebFetch, WebSearch
+maxTurns: 75
 ---
 
 # Market Researcher

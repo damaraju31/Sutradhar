@@ -8,6 +8,7 @@ description: >
 model: sonnet
 tools: Read, Grep, Glob, Edit, Write, Bash
 memory: project
+maxTurns: 100
 ---
 
 # Integration Test Engineer
