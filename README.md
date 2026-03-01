@@ -60,19 +60,22 @@ Coding conventions?    → (optional — add any project-specific rules)
 
 After init, your project has a full `.claude/` directory with agents, skills, and commands, plus a `docs/` directory for team outputs.
 
-### 3. Launch a team (new terminal tab)
+### 3. Launch a team
 
-In **Tab 1** (your control session), run:
+In your control session, run:
 
 ```
 /launch-team product
 ```
 
-Claude outputs the exact command. Copy it, open **Tab 2**, run it:
+Claude outputs the exact command. **Recommended:** use tmux to manage sessions in separate windows.
 
 ```bash
-claude --agent product-cpo --model claude-opus-4-6
+# In a new tmux window (Ctrl-b c):
+claude --agent product-cpo
 ```
+
+> **Alternative:** Open a new terminal tab instead of a tmux window — the framework works either way. tmux is recommended because you can script window creation and keep all sessions visible in one terminal.
 
 The CPO is live. Start with:
 
@@ -81,7 +84,7 @@ The CPO is live. Start with:
 /product-prd      → write the PRD
 ```
 
-### 4. Sync state (back in Tab 1)
+### 4. Sync state (back in your control session)
 
 After the CPO team produces output:
 
@@ -99,37 +102,36 @@ Once the PRD is approved:
 /launch-team design        → gets the Design Lead session command
 ```
 
-Run each in a new terminal tab.
+Run each in a new tmux window (or terminal tab).
 
 ---
 
 ## How It Works
 
-### The Tab Model
+### The Session Model
 
-You are the CEO. Each team runs as an independent `claude --agent` session in its own terminal tab. You switch tabs to interact with different teams — like switching Slack channels, but each "channel" is an expert AI agent with persistent memory and a team of subagents.
+You are the CEO. Each team runs as an independent `claude --agent` session in its own tmux window (or terminal tab). You switch between windows to interact with different teams — like switching Slack channels, but each "channel" is an expert AI agent with persistent memory and a team of subagents.
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │                    YOU (CEO / CTO)                            │
-│            Switches between terminal tabs                     │
+│     Switches between tmux windows (or tabs)                  │
 │                                                               │
-│  Tab 1: Control Session       Tab 2: CPO Session             │
+│  Window 1: Control Session    Window 2: CPO Session          │
 │  ┌─────────────────────┐     ┌────────────────────────┐      │
 │  │ claude               │     │ claude --agent          │      │
 │  │                      │     │   product-cpo           │      │
-│  │ /project-init        │     │   --model opus          │      │
-│  │ /launch-team         │     │                         │      │
-│  │ /project-sync        │     │ Spawns via Task tool:   │      │
-│  │ /project-status      │     │ ├── product-researcher  │      │
-│  └─────────────────────┘     │ └── product-apm         │      │
-│                               └────────────────────────┘      │
-│  Tab 3: Architect Session     Tab 4: Design Session           │
+│  │ /project-init        │     │                         │      │
+│  │ /launch-team         │     │ Spawns via Agent tool:  │      │
+│  │ /project-sync        │     │ ├── product-researcher  │      │
+│  │ /project-status      │     │ └── product-apm         │      │
+│  └─────────────────────┘     └────────────────────────┘      │
+│                                                               │
+│  Window 3: Architect Session  Window 4: Design Session       │
 │  ┌─────────────────────┐     ┌────────────────────────┐      │
 │  │ claude --agent       │     │ claude --agent          │      │
 │  │   engineering-       │     │   design-lead           │      │
-│  │   architect          │     │   --model opus          │      │
-│  │   --model opus       │     │                         │      │
+│  │   architect          │     │                         │      │
 │  └─────────────────────┘     └────────────────────────┘      │
 │                                                               │
 │   All sessions share docs/ on disk. File-based coordination. │
@@ -138,7 +140,7 @@ You are the CEO. Each team runs as an independent `claude --agent` session in it
 
 ### Head Agents and Subagents
 
-Each team has a **head agent** (CPO, Architect, Design Lead, etc.) that runs at the Opus model level. Head agents think strategically and delegate detailed work to **subagents** from their team using Claude Code's built-in Task tool.
+Each team has a **head agent** (CPO, Architect, Design Lead, etc.) that runs at the Opus model level. Head agents think strategically and delegate detailed work to **subagents** from their team using Claude Code's built-in Agent tool.
 
 Each subagent runs in an isolated context window — only the summary returns to the head agent. This prevents context bloat across long sessions and keeps each specialist focused on their scope.
 
@@ -223,7 +225,7 @@ Phase 4: Post-Launch
 
 ## Commands Reference
 
-All commands run in **Tab 1** (your control session, plain `claude` without `--agent`).
+All commands run in your **control session** (tmux window 1 or Tab 1 — plain `claude` without `--agent`).
 
 | Command | When | What It Does |
 |---------|------|-------------|
@@ -233,6 +235,7 @@ All commands run in **Tab 1** (your control session, plain `claude` without `--a
 | `/project-sync` | After a team completes work | Reads `STATE_UPDATE.md` from each team, merges into `PROJECT_STATE.md` |
 | `/project-activate-team <name>` | Adding a team mid-project | Adds team to `CLAUDE.md`, copies its agents and skills |
 | `/project-deactivate-team <name>` | Pausing a team | Removes from active list, archives team docs |
+| `/stop-all` | When shutting down | Signals all running team sessions to stop gracefully |
 
 **Team names for `/launch-team`:** `product`, `engineering`, `design`, `devops`, `growth`, `cx`, `analytics`, `business`, `security`
 
@@ -262,15 +265,19 @@ your-project/
 │       │   ├── TECH_SPEC.md
 │       │   ├── API_DESIGN.md
 │       │   └── ADR/                   ← Architecture Decision Records
-│       └── design/
-│           ├── DESIGN_SYSTEM.md
-│           ├── UX_FLOWS.md
-│           └── UI_SPEC.md
+│       ├── design/
+│       │   ├── DESIGN_SYSTEM.md
+│       │   ├── UX_FLOWS.md
+│       │   └── UI_SPEC.md
+│       ├── ACTIVITY.log               ← Append-only log of cross-team events
+│       └── URGENT.jsonl               ← Urgent signals between sessions
 │
 └── .claude/
     ├── agents/                        ← 29 agent definition files (edit to customize)
     ├── skills/                        ← 13 skill workflows with templates
-    └── commands/                      ← 5 control commands
+    ├── commands/                      ← 6 control commands
+    ├── hooks/                         ← 6 hook scripts (activity logging, state sync)
+    └── settings.json                  ← Hook configuration and tool permissions
 ```
 
 ---
@@ -349,9 +356,9 @@ bash install.sh
 |---------|-----|
 | `/project-init` not found | Confirm install: `ls ~/.claude/skills/project-init/SKILL.md` |
 | "PRD not found" when launching Engineering | Run `/product-prd` in the Product team session first |
-| Agent spawns wrong subagents | Check `tools:` field in `.claude/agents/{head-agent}.md` — a `Task(agent1,agent2)` allowlist may be missing an agent name |
+| Agent spawns wrong subagents | Check `tools:` field in `.claude/agents/{head-agent}.md` — an `Agent(agent1,agent2)` allowlist may be missing an agent name |
 | `init.sh` fails: "python3 not found" | `brew install python3` (macOS) or `apt install python3` (Linux) |
-| State looks stale after switching sessions | Run `/project-sync` in Tab 1, then launch a fresh team session |
+| State looks stale after switching sessions | Run `/project-sync` in your control session, then launch a fresh team session |
 | Want to reset a team's brief | Edit `docs/teams/{team}/TEAM_BRIEF.md` directly — agents read it on startup |
 
 ---
