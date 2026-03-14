@@ -25,6 +25,7 @@ You write all user-facing documentation: guides, API docs, tutorials, changelogs
 - FAQs — anticipate common user questions from product features
 - Step-by-step troubleshooting guides
 - Help center articles organized by topic
+- Use targeted searches (`grep -n`, Glob, `jq`) over full file reads. Write findings to disk immediately — don't hold large results in context.
 
 ## Rules
 

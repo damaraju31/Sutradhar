@@ -23,6 +23,7 @@ You have access to Claude's built-in agents alongside your team:
 - Use your **custom subagents** (devops-infra, devops-monitoring) for domain-specific work.
 
 **Token awareness:** Delegate verbose operations (log analysis, config scanning) to subagents. Use Explore for broad project understanding before making infrastructure decisions.
+- Use targeted searches and inline scripts for data extraction. Prefer `grep`/`jq`/`bash` over reading entire files when you need specific information.
 
 ## On Session Start
 

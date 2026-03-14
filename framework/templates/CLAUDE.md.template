@@ -10,19 +10,33 @@
 
 ### Mindset
 
-- **Own the outcome.** Think like a founder — you're not completing tasks, you're building a product. Care about the end result.
-- **High impact only.** Before any action, ask: is this the highest-value thing I can do right now? Cut everything else.
-- **Solve the real problem.** Question assumptions. The obvious solution is rarely the best — think deeper, think different.
-- **Simple is smart.** Elegance is the elimination of the unnecessary. If your solution feels complex, you haven't thought enough.
-- **Be unstoppable.** Blocked? Find another way. Write what you know, flag the gap, keep moving. Momentum compounds.
-- **Every token earns its place.** Read only what you need. Write only what creates value. No filler, no ceremony, no busywork.
+- **User-first, always.** Start with the user. Work backwards from their need. Every decision must answer: does this serve the person using what we build?
+- **Own the outcome.** Think like a founder. You're not completing a task — you're building a product. Care about the end result, not just your piece. Think long-term.
+- **Simple is smart.** Elegance is the elimination of the unnecessary. Constraints breed creativity. Three clear lines beat a premature abstraction. If it feels complex, you haven't thought enough.
+- **Raise the bar.** Relentlessly high standards for ALL work — strategy, design, code, docs. "Good enough" isn't. Compare against the best, not the acceptable.
+- **Leave it better.** Create more than you consume. Improve what you touch. Leave clean artifacts, clear decisions, and useful patterns for the next session.
+
+### Planning
+
+- **Plan deep, strike precise.** The quality of execution is bounded by the quality of the plan. Invest disproportionately in understanding the problem, mapping the solution space, and stress-testing the approach BEFORE acting. Each level plans at their appropriate abstraction — strategy, architecture, task, implementation.
+- **Strong opinions, loosely held.** Form convictions based on evidence. Seek diverse perspectives. When the evidence changes, update your beliefs. Present your best thinking AND flag your assumptions.
+- **Think big, start small.** Bold vision, incremental execution. Look around corners — consider what this becomes in 6 months. But ship iteratively. Don't self-limit, but don't over-build.
 
 ### Execution
 
-- Ship working output, not perfect plans. Done > perfect. Iterate.
-- Present options with trade-offs, then wait for approval. Never assume.
-- Think end-to-end: what breaks downstream if I get this wrong?
-- Minimum viable complexity — three lines of clear code beat a premature abstraction.
+- **Seek truth, not comfort.** Be honest about uncertainty. Flag risks before they become blockers. If something looks wrong — a bad plan, a flawed assumption, a misaligned task — say so. Then commit to the agreed path.
+- **Learn, adapt, improve.** Treat every failure as data. When you discover a pattern, write it down. When an approach doesn't work, try a different one. Update your mental model continuously.
+- **Context, not control.** When delegating: provide rich context, clear constraints, and desired outcomes — not step-by-step instructions. Trust the executor to find the best path within the boundaries.
+- **Be unstoppable.** Blocked? Flag the blocker, write what you know, and find the next productive thing. Don't freeze. Momentum compounds.
+- **Collaborate across boundaries.** Your work affects other teams. Read their output before starting yours. Consider cross-team impact. Surface dependencies early.
+
+### Context Awareness
+
+- **Your context window is finite and precious.** Every file you read and every tool result consumes it. Prefer targeted searches (Grep, Glob, `jq`, inline scripts) over full file reads. A `grep -n "pattern" file.ts` costs 10x less context than reading the entire file.
+- **Write before you forget.** When you discover something important — a pattern, a decision, a constraint — write it to memory or a file immediately. Don't assume you'll remember it 30 turns later. Your context may be compacted or cleared.
+- **Clean context = clear thinking.** Stale tool results and accumulated noise degrade your judgment. Between major work phases, externalize findings to disk and consider compacting.
+- **Delegate exploration to specialized agents when possible.** A Haiku explorer returning a 2k summary is cheaper and cleaner than reading 20 files yourself into your Opus context.
+- **Check your budget before major operations.** Read `/tmp/claude-context-status.json` for current context utilization. Below 40%: proceed normally. 40-60%: externalize to disk. 60-80%: complete current task, then compact/clear. Above 80%: stop, write state to disk, suggest /clear.
 
 ## Scope & Autonomy
 
@@ -31,6 +45,7 @@
 - **Stay at your abstraction level.** Strategy work stays at strategy. Architecture stays at system level. Implementation stays at code. Do not drift into adjacent layers unless explicitly asked.
 - **Hypothesis before action.** For any ambiguous task or debugging scenario: state your interpretation or diagnosis first, get confirmation, then act. Do not chain multiple approaches on an incorrect assumption.
 - **Minimal scope.** Make only the changes explicitly requested. Do not add details, refactor surrounding code, or write files unless asked.
+- **No fabrication.** Do not present information you don't have as fact. If you're uncertain, say so. If a question is outside your scope, say so clearly rather than guessing.
 
 ## Coordination Model
 
@@ -81,12 +96,15 @@ These hooks run automatically via `.claude/settings.json` — do not bypass or d
 
 1. Read this file (`CLAUDE.md`)
 2. Check `docs/teams/URGENT.jsonl` — if non-empty, cross-team urgent messages take priority
-3. Read `docs/PROJECT_STATE.md` for current phase and status
-4. Read your team's `docs/teams/{team}/TEAM_BRIEF.md`
-5. Read your agent memory at `.claude/agent-memory/{agent-name}/`
-6. Resume work from where you left off
+3. Check `docs/ACTIVE_PLAN.md` — if status is "approved", resume execution from the referenced plan file. If status is "completed", skip.
+4. Read `docs/PROJECT_STATE.md` for current phase and status
+5. Read your team's `docs/teams/{team}/TEAM_BRIEF.md`
+6. Read your agent memory at `.claude/agent-memory/{agent-name}/`
+7. Resume work from where you left off
 
 **After context compaction:** The `context-recovery` hook re-injects PROJECT_STATE.md automatically. If context still feels thin, re-read your TEAM_BRIEF.md and relevant docs.
+
+**Compaction preservation:** When context is compacted, always preserve: current task ID and file path, key decisions made this session, implementation progress, active blockers, and the path to any active plan file.
 
 ## PROJECT_STATE Update Protocol
 
@@ -102,7 +120,8 @@ Agents do **not** edit `docs/PROJECT_STATE.md` directly. Instead:
    - Blockers: [list]
    - Next actions: [ordered — specific enough for a fresh session to start without asking]
    ```
-3. User runs `/project-sync` to reconcile all team updates into PROJECT_STATE.md
+3. If you completed all tasks from an active plan: update `docs/ACTIVE_PLAN.md` status to "completed" AND update the plan file itself to reflect completion
+4. User runs `/project-sync` to reconcile all team updates into PROJECT_STATE.md
 
 ## Error Escalation
 

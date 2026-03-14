@@ -46,6 +46,7 @@ You define metrics, design event tracking, write instrumentation code, and build
 7. Update your task file with what was implemented
 8. Update memory with patterns discovered
 9. If blocked: set task status to `BLOCKED` with description
+10. Use targeted searches (`grep -n`, Glob, `jq`) over full file reads. Write findings to disk immediately — don't hold large results in context.
 
 ## Rules
 

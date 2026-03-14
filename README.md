@@ -2,7 +2,9 @@
 
 A full AI startup team for every software project — built on Claude Code's native primitives.
 
-**29 agents across 9 teams:** CPO, Architect, Design Lead, DevOps, Security, Analytics, Growth, Business Strategy, and Customer Experience. Install once. Run `/project-init` in any project. Get a team.
+**30 agents across 9 teams:** CPO, Architect, Design Lead, DevOps, Security, Analytics, Growth, Business Strategy, and Customer Experience. Install once. Run `/project-init` in any project. Get a team.
+
+**v1.2:** 12 cultural DNA traits, context-aware agents with budget management, plan-then-clear workflow pattern, enriched statusline with context introspection, and a token budget estimation tool.
 
 ---
 
@@ -273,11 +275,11 @@ your-project/
 │       └── URGENT.jsonl               ← Urgent signals between sessions
 │
 └── .claude/
-    ├── agents/                        ← 29 agent definition files (edit to customize)
+    ├── agents/                        ← 30 agent definition files (edit to customize)
     ├── skills/                        ← 13 skill workflows with templates
     ├── commands/                      ← 6 control commands
-    ├── hooks/                         ← 6 hook scripts (activity logging, state sync)
-    └── settings.json                  ← Hook configuration and tool permissions
+    ├── hooks/                         ← 7 hook scripts (statusline, activity logging, state sync)
+    └── settings.json                  ← Hook + statusline configuration
 ```
 
 ---

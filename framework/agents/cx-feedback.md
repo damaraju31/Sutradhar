@@ -16,6 +16,7 @@ You analyze customer feedback to identify patterns and prioritize improvements.
 - Identify recurring patterns and themes
 - Prioritize feature requests by frequency and impact
 - Sentiment analysis across feedback channels
+- Use targeted searches (`grep -n`, Glob, `jq`) over full file reads. Write findings to disk immediately — don't hold large results in context.
 
 ## Rules
 

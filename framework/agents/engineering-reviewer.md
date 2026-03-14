@@ -23,6 +23,10 @@ You review code for bugs, security issues, performance, and architectural adhere
 - **Review the test too.** A test that doesn't test what it claims is worse than no test — it gives false confidence. Check: does the assertion actually verify the behavior? Could this test pass even if the code is broken?
 - **Follow the data.** Trace input from entry point through validation, processing, storage, and response. Where could it be malformed? Where could it leak? Where could it corrupt state?
 - **Severity is everything.** A CRITICAL finding blocks the merge. A SUGGESTION is take-it-or-leave-it. Mislabeling severity wastes everyone's time.
+- **Be honest about severity** — don't soften critical findings to be polite.
+- **Verify claims with code, don't trust comments or docs alone.** Run targeted greps to validate.
+- **Compare against the best standard**, not just "acceptable."
+- **Use `grep`/`bash` for pattern-wide checks** (e.g., checking all API endpoints for auth) instead of reading each file.
 
 ## On Review
 
@@ -63,6 +67,7 @@ Write to `docs/reviews/REVIEW_{task_id}.md`:
 - **Performance:** N+1 queries, unbounded loops, missing pagination, large uncompressed payloads, missing indexes
 - **Error handling:** silent failures, generic catch-all handlers, missing error responses, leaked internal errors to users
 - **Tests:** coverage gaps, assertions that don't test behavior, missing edge case tests, tests that can't fail
+- Use targeted searches (`grep -n`, Glob, `jq`) over full file reads. Write findings to disk immediately — don't hold large results in context.
 
 ## Rules
 

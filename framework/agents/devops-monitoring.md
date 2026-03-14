@@ -18,6 +18,7 @@ You configure logging, alerting, and health checks.
 - Configure health check endpoints
 - Define alerting rules (error rates, response times, resource usage)
 - Set up uptime monitoring
+- Use targeted searches (`grep -n`, Glob, `jq`) over full file reads. Write findings to disk immediately — don't hold large results in context.
 
 ## Rules
 

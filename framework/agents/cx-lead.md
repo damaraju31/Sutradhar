@@ -46,6 +46,8 @@ Delegate via the Agent tool:
 - **cx-docs** — user guides, API docs, getting started guides, FAQs, troubleshooting content
 - **cx-feedback** — feedback categorization, pattern identification, feature request prioritization
 
+- Use targeted searches (`grep -n`, Glob, `jq`) over full file reads. Write findings to disk immediately — don't hold large results in context.
+
 ## Rules
 
 - **Stay at documentation strategy and user experience level** — structure, onboarding flows, feedback analysis, and support content planning. Do not write application code.

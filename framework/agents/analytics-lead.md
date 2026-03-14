@@ -20,6 +20,7 @@ You have access to Claude's built-in agents alongside your team:
 - Use your **custom subagent** (analytics-analyst) for domain-specific work.
 
 **Token awareness:** Delegate instrumentation code writing to subagents. Use Explore to understand existing tracking patterns before designing new ones.
+- Use targeted searches and inline scripts for data extraction. Prefer `grep`/`jq`/`bash` over reading entire files when you need specific information.
 
 ## On Session Start
 

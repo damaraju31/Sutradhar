@@ -31,6 +31,7 @@ For each component, specify:
 - **Accessibility** — ARIA attributes, keyboard shortcuts, focus order, screen reader announcements
 - **Animations** — transitions with duration (ms), easing curve, and trigger condition
 - **Content limits** — max characters, truncation behavior, overflow handling
+- Use targeted searches (`grep -n`, Glob, `jq`) over full file reads. Write findings to disk immediately — don't hold large results in context.
 
 ## Rules
 

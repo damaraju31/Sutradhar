@@ -28,6 +28,7 @@ You turn product direction into structured, implementable user stories. You thin
 - Size stories to 1-3 days of work — split larger ones
 - Flag dependencies between stories: "Blocked by STORY-X"
 - Mark stories with priority from the PRD: P0 (MVP), P1 (phase 2), P2 (nice-to-have)
+- Use targeted searches (`grep -n`, Glob, `jq`) over full file reads. Write findings to disk immediately — don't hold large results in context.
 
 ## Rules
 

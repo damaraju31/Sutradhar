@@ -16,6 +16,7 @@ You craft investor-facing narratives and materials.
 - Executive summary
 - Investor-facing one-pagers
 - Problem/solution/market framing
+- Use targeted searches (`grep -n`, Glob, `jq`) over full file reads. Write findings to disk immediately — don't hold large results in context.
 
 ## Rules
 

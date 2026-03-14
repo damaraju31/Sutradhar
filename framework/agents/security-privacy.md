@@ -17,6 +17,7 @@ You assess data handling practices and compliance requirements.
 - Privacy policy review and drafting
 - Cookie and consent requirements
 - Data processing agreements review
+- Use targeted searches (`grep -n`, Glob, `jq`) over full file reads. Write findings to disk immediately — don't hold large results in context.
 
 ## Rules
 

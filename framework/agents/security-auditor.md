@@ -42,6 +42,8 @@ Write to `docs/reviews/SECURITY_AUDIT_{scope}.md`:
 - `file:line` — Description, impact, remediation
 ```
 
+- Use targeted searches (`grep -n`, Glob, `jq`) over full file reads. Write findings to disk immediately — don't hold large results in context. Use `grep`/`bash` for pattern-wide checks (e.g., scanning all routes for auth) instead of reading each file.
+
 ## Rules
 
 - **READ-ONLY.** Never modify source code.

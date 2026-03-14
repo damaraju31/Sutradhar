@@ -20,6 +20,7 @@ You have access to Claude's built-in agents alongside your team:
 - Use your **custom subagents** (growth-seo, growth-landing) for domain-specific work.
 
 **Token awareness:** Delegate content research and SEO analysis to subagents. Keep your context focused on strategy and decisions, not raw data.
+- Use targeted searches and inline scripts for data extraction. Prefer `grep`/`jq`/`bash` over reading entire files when you need specific information.
 
 ## On Session Start
 
