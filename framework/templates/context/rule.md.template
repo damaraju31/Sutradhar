@@ -1,0 +1,27 @@
+---
+paths:
+  - "{{DOMAIN_PATH}}/**"
+---
+# {{DOMAIN_NAME}}
+
+> {{ONE_LINE_SUMMARY}}
+
+## Key Patterns
+<!-- How code in this domain is structured. Service patterns, naming conventions, data flow. -->
+
+## Constraints
+<!-- What must always be true when working here. Security rules, invariants, performance budgets. -->
+
+## Integration Points
+<!-- What other domains this one talks to. Data flow in and out. -->
+
+## Limitations
+<!-- What this documentation does NOT cover. Known inaccuracies. Areas where code diverges from what's described. -->
+
+## Deep Dives
+<!-- Pointers to component files for complex internals. Only list components that have dedicated files. -->
+<!-- - Component name: `.claude/context/components/component_name.md` -->
+
+## Provenance
+<!-- Append-only. Who created/updated this file, when, and based on what evidence. -->
+<!-- Format: YYYY-MM-DD | source | description -->

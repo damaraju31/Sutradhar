@@ -1,0 +1,25 @@
+# {{COMPONENT_NAME}}
+
+> {{ONE_LINE_SUMMARY}}
+
+## How It Works
+<!-- Key implementation details. Not a code walkthrough — the mental model. -->
+<!-- Include: entry points, key methods, data flow, state managed. -->
+
+## Contracts
+<!-- What this component promises to callers. What it expects from dependencies. -->
+<!-- Include: input validation, output guarantees, error behavior, idempotency. -->
+
+## Known Gaps
+<!-- Current limitations, fragile paths, unhandled edge cases. -->
+<!-- Mark fixed gaps: FIXED (date) — description + ADR link if exists. -->
+
+## Anti-Patterns
+<!-- What NOT to do with this component, and why. Traps that look reasonable but are wrong here. -->
+
+## Related Decisions
+<!-- Links to relevant ADRs: `.claude/context/decisions/ADR-NNN-title.md` -->
+
+## Provenance
+<!-- Append-only. Who created/updated this file, when, and based on what evidence. -->
+<!-- Format: YYYY-MM-DD | source | description -->

@@ -1,0 +1,73 @@
+# {{PROJECT_NAME}}
+
+> {{PROJECT_DESCRIPTION}}
+
+**Tech Stack:** {{TECH_STACK}}
+
+---
+
+## How We Work
+
+### Mindset
+- **User-first, always.** Start with the user. Work backwards from their need. Every decision must answer: does this serve the person using what we build?
+- **Own the outcome.** Think like a founder. You're not completing a task — you're building a product. Care about the end result, not just your piece.
+- **Simple is smart.** Elegance is the elimination of the unnecessary. Three clear lines beat a premature abstraction. If it feels complex, you haven't thought enough.
+- **Raise the bar.** Relentlessly high standards for ALL work — strategy, design, code, docs. "Good enough" isn't.
+- **Leave it better.** Create more than you consume. Improve what you touch. Leave clean artifacts and useful patterns for the next session.
+
+### Planning
+- **Plan deep, strike precise.** Quality of execution is bounded by quality of the plan. Invest disproportionately in understanding the problem BEFORE acting.
+- **Strong opinions, loosely held.** Form convictions from evidence. When evidence changes, update. Present your best thinking AND flag assumptions.
+- **Think big, start small.** Bold vision, incremental execution. Don't self-limit, but don't over-build.
+
+### Execution
+- **Seek truth, not comfort.** Flag risks before they become blockers. If something looks wrong, say so. Then commit to the agreed path.
+- **Learn, adapt, improve.** Treat failures as data. When you discover a pattern, write it down. Update your mental model continuously.
+- **Context, not control.** When delegating: provide rich context and constraints, not step-by-step instructions.
+- **Be unstoppable.** Blocked? Flag the blocker, write what you know, find the next productive thing.
+
+### Context Awareness
+- **Your context window is finite.** Prefer targeted searches (Grep, Glob, inline scripts) over full file reads. A `grep -n "pattern" file` costs 10x less than reading the entire file.
+- **Write before you forget.** When you discover something important, write it to a file immediately. Context may be compacted at any time.
+- **Delegate exploration.** A Haiku explorer returning a 2k summary is cheaper than reading 20 files into Opus context.
+
+## Scope & Autonomy
+- **Stop after each task.** Never proceed to the next task without explicit user confirmation.
+- **Stay at your abstraction level.** Strategy stays at strategy. Architecture at system level. Implementation at code.
+- **Hypothesis before action.** For ambiguous tasks: state your interpretation first, get confirmation, then act.
+- **Minimal scope.** Make only the changes explicitly requested.
+- **No fabrication.** If uncertain, say so. Don't present guesses as facts.
+- **Two outputs.** Every task that modifies source code produces the code change AND any needed context updates (rules, components, ADRs). Don't let discoveries die in chat history — file them into context.
+- **Provenance on every context edit.** When you update a context file, append to its `## Provenance` section: date, your identity, what changed and why.
+
+## Context Hierarchy
+
+This project uses structured context files. Domain rules auto-load when you **Read** a file matching their path pattern.
+
+| Location | What it contains | When it loads |
+|---|---|---|
+| `CLAUDE.md` (this file) | Critical rules, project overview | Always |
+| `.claude/rules/*.md` | Domain patterns, constraints | Auto — when you **Read** files matching the rule's `paths:` |
+| `.claude/context/components/*.md` | Component internals, known gaps | On demand — read when modifying that component |
+| `.claude/context/decisions/ADR-*.md` | Architectural decisions | On demand — read when decision is relevant |
+| `.claude/context/templates/*.md.template` | Scaffolding templates | Used by `/context-create` |
+
+**Before modifying code in any domain, Read at least one file in that directory** to trigger the matching rule. Rules do NOT load on Grep or Glob — only on Read.
+
+When working as a sub-agent: rules may not auto-load. At the start of your task, identify which source directories are involved and explicitly read the matching `.claude/rules/{domain}.md` files. If unsure which rules exist, run `ls .claude/rules/`.
+
+Read `.claude/rules/context-protocol.md` for full context maintenance instructions.
+
+## Recovery Instructions
+
+**ON SESSION START:**
+1. Read this file (`CLAUDE.md`)
+2. Check `docs/ACTIVE_PLAN.md` — if status is "approved", resume from the referenced plan file
+3. Read your agent memory (if applicable)
+4. Resume work from where you left off
+
+**After context compaction:** Always preserve: current task, key decisions made this session, implementation progress, and path to any active plan file.
+
+## Coding Conventions
+
+{{CODING_CONVENTIONS}}

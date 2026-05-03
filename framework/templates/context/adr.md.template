@@ -1,0 +1,20 @@
+# ADR-{{NUMBER}}: {{TITLE}}
+
+> {{ONE_LINE_SUMMARY}}
+
+**Status**: proposed | accepted | superseded by ADR-{{NNN}}
+**Date**: {{DATE}}
+**Scope**: {{DOMAINS_AFFECTED}}
+**Evidence**: {{SOURCE_OF_DECISION — bootstrap analysis, git history, explicit discussion, inferred from code}}
+
+## Context
+<!-- What situation prompted this decision? What problem were we solving? -->
+
+## Decision
+<!-- What was decided, concisely. The actual choice made. -->
+
+## Alternatives Considered
+<!-- What else was evaluated and why it was rejected. Keep brief — one line per alternative. -->
+
+## Implications
+<!-- What this means for future work. Constraints it creates. What must now be true. -->

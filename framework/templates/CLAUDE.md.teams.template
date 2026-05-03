@@ -1,0 +1,61 @@
+
+## Team Coordination
+
+### Coordination Model
+- **Teams are separate sessions.** Each team runs in its own tmux window (or terminal tab), led by a head agent launched via `claude --agent <name>`.
+- **Delegation via task files.** Head agents create task files in `docs/tasks/` from the template, fill the **Pre-Gathered Context** section, then spawn coding subagents via the Agent tool.
+- **Subagents cannot delegate.** Coding/research subagents execute work directly.
+- **Cross-team communication is pull-only.** Write outputs to `docs/teams/{your-team}/`. Read from other teams' directories. For urgent cross-team issues, use `docs/teams/URGENT.jsonl`.
+
+### Engineering Standards
+- **TDD loop.** For each acceptance criterion: failing test → confirm red → minimum code → confirm green → refactor.
+- **Baseline first.** Before touching existing code, run the full test suite. You own new failures.
+- **100% is the bar.** Never declare a task complete at partial pass rate. If stuck, set status to BLOCKED.
+- **Branch discipline.** Engineering work on `impl/{feature}` branches created by the Architect.
+
+### Active Hooks
+These hooks run automatically — do not bypass:
+- **Security guard** (PreToolUse → Bash): Blocks destructive commands. Find safer alternatives.
+- **Code quality gate** (SubagentStop → coding agents): Runs tests on completion. Fix failures before proceeding.
+- **Context recovery** (SessionStart → compact): Re-injects PROJECT_STATE.md after compaction.
+- **Context maintenance** (PostToolUse → Write/Edit): Reminds to update context files when modifying code.
+- **Activity tracking** (PostToolUse, SubagentStop): Logs changes to `docs/teams/ACTIVITY.log`.
+
+### File Map (Team Mode)
+
+| Path | Purpose |
+|------|---------|
+| `docs/PROJECT_STATE.md` | Living project status — single source of truth |
+| `docs/ARCHITECTURE.md` | Technical architecture |
+| `docs/tasks/` | Active task files |
+| `docs/tasks/TASK.md.template` | Task file template |
+| `docs/teams/{team}/TEAM_BRIEF.md` | Per-team brief |
+| `docs/teams/{team}/DECISIONS.md` | Per-team decision log |
+| `docs/teams/{team}/STATE_UPDATE.md` | Pending state update |
+| `docs/teams/URGENT.jsonl` | Cross-team urgent messages |
+
+### Recovery Instructions (Team Mode)
+
+**ON SESSION START — every agent, every time:**
+1. Check `docs/teams/URGENT.jsonl` — urgent messages take priority
+2. Read `docs/PROJECT_STATE.md` for current phase
+3. Read your team's `docs/teams/{team}/TEAM_BRIEF.md`
+4. Read your agent memory at `.claude/agent-memory/{agent-name}/`
+
+### PROJECT_STATE Update Protocol
+
+Agents do **not** edit `docs/PROJECT_STATE.md` directly. Instead:
+1. Complete work, update `docs/teams/{team}/DECISIONS.md`
+2. Write structured update to `docs/teams/{team}/STATE_UPDATE.md`
+3. If plan completed: update `docs/ACTIVE_PLAN.md` status to "completed"
+4. User runs `/project-sync` to reconcile
+
+### Error Escalation
+1. Set task file `status: blocked` with clear description
+2. Write blocker to `docs/teams/{team}/STATE_UPDATE.md`
+3. For cross-team blockers: append to `docs/teams/URGENT.jsonl`
+4. Never proceed with assumptions on blockers. Stop, document, surface.
+
+### Active Teams
+
+{{ACTIVE_TEAMS}}
