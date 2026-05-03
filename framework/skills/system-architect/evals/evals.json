@@ -1,0 +1,23 @@
+{
+  "skill_name": "system-architect",
+  "evals": [
+    {
+      "id": 1,
+      "name": "eval-schema-migration",
+      "prompt": "I need to add multi-currency support. The plan is to add a `currency_code VARCHAR(3) DEFAULT 'INR'` column to Asset, Liability, Income, Expense, AssetTransaction, and LiabilityPayment tables, plus an `exchange_rate DECIMAL` column to each. I'll create one Alembic migration for all 6 tables. The net worth calculation will convert everything to INR using the exchange rate before summing. Review this approach from a systems architecture perspective.",
+      "expected_output": "Should identify: (1) single migration touching 6 tables is risky — prefer per-table or per-layer migrations, (2) exchange_rate on every row is denormalized — stale rates compound errors, (3) net worth recomputation must handle mixed currencies atomically, (4) DEFAULT 'INR' is safe for expand phase but existing data needs backfill verification, (5) JSONB meta_data may also contain currency-relevant data that needs consistency, (6) rollback strategy for a 6-table migration"
+    },
+    {
+      "id": 2,
+      "name": "eval-race-condition",
+      "prompt": "We're seeing a bug where two bank statements uploaded simultaneously for the same HDFC savings account create duplicate Asset records. The first upload creates the asset via AccountResolutionService.find_or_create(), and a second upload arriving 200ms later also creates an asset because the find_or_create check doesn't see the uncommitted first transaction. The user ends up with split transaction history across two assets and incorrect net worth. How should we fix this?",
+      "expected_output": "Should identify: (1) this is a classic TOCTOU race condition in find-or-create, (2) propose PostgreSQL advisory lock on hash(user_id, bank_name, account_number) as primary fix, (3) also mention unique constraint as defense-in-depth, (4) discuss blast radius — split assets affect net worth, insights, reconciliation, (5) consider the recovery path for already-corrupted data (merge duplicate assets), (6) explain why READ COMMITTED isolation allows this, (7) provide concrete verification criteria"
+    },
+    {
+      "id": 3,
+      "name": "eval-new-module",
+      "prompt": "I want to add a new MutualFundProcessor that handles CAS (Consolidated Account Statement) documents. Unlike bank statements which produce transactions, CAS documents produce portfolio holdings — a completely different data shape. The processor needs to: (1) parse fund-wise holdings from the AI extraction, (2) fetch current NAV from an external AMFI API for each fund, (3) create/update Asset records per fund, (4) calculate unrealized gains. I'm planning to put this in ingestion/processing/mutual_fund_processor.py and register it with the V2 dispatcher. Review the design.",
+      "expected_output": "Should identify: (1) external API dependency (AMFI) introduces a new failure mode in the processing pipeline — what happens when AMFI is down? (2) NAV fetch should be separated from processing — don't block document processing on external API availability, (3) module depth assessment — is the processor hiding the right complexity? (4) the holdings-vs-transactions difference means the existing transaction_processor bridge pattern doesn't apply — new entity lifecycle needed, (5) unrealized gains are computed values that change daily — storage strategy matters (snapshot vs compute-on-read), (6) V2 dispatcher registration is correct pattern, (7) idempotency — reprocessing CAS should upsert holdings, not duplicate them"
+    }
+  ]
+}

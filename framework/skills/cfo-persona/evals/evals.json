@@ -1,0 +1,20 @@
+{
+  "skill_name": "cfo-persona",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm adding a new feature where when a user records a CC payment manually, the outstanding_amount on the Liability gets reduced immediately. Here's the core logic I'm adding to core/liabilities.py:\n\n```python\nasync def record_manual_payment(session, user_id, liability_id, amount):\n    liability = await get_liability(session, user_id, liability_id)\n    liability.outstanding_amount -= amount\n    payment = LiabilityPayment(\n        liability_id=liability_id,\n        payment_amount=amount,\n        payment_date=date.today(),\n        source='manual'\n    )\n    session.add(payment)\n    await session.flush()\n    return payment\n```\n\nDoes this look right from a financial accuracy standpoint?",
+      "expected_output": "Should identify: missing net worth recalculation, no principal/interest breakdown, no audit trail for balance change, missing Decimal enforcement, no dedup check if payment already exists from statement, no handling of CRED cashback scenario where bank amount differs from CC credit amount, should log previous outstanding value before modifying."
+    },
+    {
+      "id": 2,
+      "prompt": "We're calculating monthly surplus in the analytics service. The formula currently is:\n\n```python\nsurplus = total_income - total_expenses - total_liability_payments\n```\n\nWhere total_liability_payments includes ALL liability payments (CC bills, home loan EMIs, personal loan EMIs). A user reported that their surplus looks too low — they have a Rs.80K salary and Rs.40K in CC bills and Rs.15K home loan EMI, but the surplus shows -Rs.25K even though their actual expenses are only Rs.50K. What's wrong?",
+      "expected_output": "Should identify the double-counting problem: CC expenses (swipes) are already in total_expenses, AND the CC bill payment is in total_liability_payments. The CC bill payment is a liability settlement, not a new expense. Surplus should be Income - (Expenses + non-CC debt service). The Rs.40K CC bill overlaps with CC swipe expenses already counted. Should also mention that this is a known pattern in the WiseInvest codebase and explain the accrual vs cash basis distinction."
+    },
+    {
+      "id": 3,
+      "prompt": "I want to add a 'financial health score' insight that combines multiple ratios. Here's my proposed formula:\n\nscore = (savings_rate * 0.3) + ((1 - debt_to_asset) * 0.25) + ((1 - credit_utilization) * 0.2) + (emergency_fund_months / 12 * 0.15) + ((1 - dti_ratio) * 0.1)\n\nEach component normalized to 0-1 range. The score would be displayed as 0-100. Does this make sense from a CFO perspective? What am I missing?",
+      "expected_output": "Should evaluate the formula rigorously: check if components are actually 0-1 bounded (debt_to_asset can exceed 1.0, emergency fund can exceed 12 months, savings_rate can be negative), whether weights reflect Indian financial priorities (savings rate may matter more in Indian context), whether the underlying data is reliable enough (CC outstanding is stale, investment values may be months old), suggest timeliness indicator, flag that negative savings rate or >1 DTI would produce nonsensical scores, suggest capping/flooring, and question whether the data inputs are trustworthy enough to derive a composite score from."
+    }
+  ]
+}
