@@ -1,5 +1,55 @@
 # Changelog
 
+## v0.1.0 — 2026-05-03 (Open-source release)
+
+First public release of Sutradhar (renamed from `agent-team-framework`).
+
+### Added
+
+- `LICENSE` (MIT), `CONTRIBUTING.md`, `.github/` issue + PR templates
+- Public-facing documentation:
+  - `docs/USAGE.md` — operator guide (install, bootstrap, run teams, extend, troubleshoot)
+  - `docs/DESIGN_RATIONALE.md` — design choices and trade-offs
+  - `docs/CONTEXT_HIERARCHY.md` — L0/L1/L2 operational spec
+- `README.md` rewritten for a public audience (172 lines, ASCII architecture diagram)
+
+### Changed
+
+- Project renamed: `agent-team-framework` → `Sutradhar`
+- Internal working notes (`spec/`, `docs/dev/`, project-local `CLAUDE.md`) gitignored
+- `tests/` gitignored (kept locally; not part of the public distribution)
+
+## v1.2.0 — 2026-03-14
+
+Cultural DNA, context engineering, and prompt enhancements.
+
+### Added
+
+- **Three-layer context hierarchy** (L0/L1/L2):
+  - L0 — `CLAUDE.md` always-loaded project identity (≤100 lines)
+  - L1 — `.claude/rules/*.md` path-triggered domain rules (≤50 lines each)
+  - L2 — `.claude/context/components/*.md` and `decisions/ADR-*.md` on-demand
+- `scripts/context-health-score.sh` — 636-line deterministic 0-100 evaluator across Coverage / Freshness / Accuracy / Completeness dimensions. Runs outside the agent.
+- `scripts/token-counter.py` — offline token estimator with `--from-task` extraction
+- `context-budget-analyst` agent (30th agent) — Haiku-powered, learned multipliers
+- New skills:
+  - `context-create`, `context-refresh`, `project-bootstrap` (5-phase analysis pipeline)
+  - `cpo-persona`, `cfo-persona`, `system-architect` (composable role lenses)
+- New hooks:
+  - `file-lock-guard.sh` — blocks Edit/Write to safety infrastructure
+  - `context-maintenance.sh` — tracks source modifications for drift detection
+  - `statusline.sh` — enriched 2-line terminal display + `/tmp/claude-context-status.json`
+- `security-guard.sh` — 6 new patterns blocking writes to safety hooks themselves
+- 12 cultural-DNA principles in `CLAUDE.md` (User-First, Own the Outcome, Plan Deep, etc.)
+- Composable templates: `CLAUDE.md.base.template` + `CLAUDE.md.teams.template`
+- `init.sh` rewritten — supports context-only mode (no teams), creates `.claude/rules/` and `.claude/context/` trees
+
+### Changed
+
+- `engineering-frontend` and `engineering-backend` enforce a two-outputs rule: every code change produces a paired context update (rule file, component file, or ADR + Provenance entry)
+- `engineering-architect` and `product-cpo` reference persona skills via frontmatter
+- `install.sh` registers `/project-bootstrap` as a global standalone skill
+
 ## v1.1.0 — 2026-03-01
 
 Integration enhancement release: coordination layer, hooks, tmux, and shareability fixes.
