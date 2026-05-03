@@ -5,19 +5,28 @@
 
 input=$(cat)
 
-# Extract raw values
+# Fail open on empty/malformed input — emit a quiet placeholder line and exit
+if [ -z "$input" ] || ! echo "$input" | jq empty 2>/dev/null; then
+  exit 0
+fi
+
+# Extract raw values (numeric fields default to 0 when missing or non-numeric)
+jq_num() { local v; v=$(echo "$input" | jq -r "$1 // 0" 2>/dev/null); [[ "$v" =~ ^[0-9]+$ ]] && echo "$v" || echo "0"; }
+jq_str() { echo "$input" | jq -r "$1 // \"\"" 2>/dev/null; }
+
 MODEL=$(echo "$input" | jq -r '.model.display_name // "?"')
-PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
+PCT=$(jq_num '.context_window.used_percentage' | cut -d. -f1)
 REMAINING_PCT=$(echo "$input" | jq -r '.context_window.remaining_percentage // 100' | cut -d. -f1)
-WINDOW_SIZE=$(echo "$input" | jq -r '.context_window.context_window_size // 200000')
+[[ "$REMAINING_PCT" =~ ^[0-9]+$ ]] || REMAINING_PCT=100
+WINDOW_SIZE=$(jq_num '.context_window.context_window_size'); [ "$WINDOW_SIZE" -eq 0 ] && WINDOW_SIZE=200000
 COST=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
-AGENT=$(echo "$input" | jq -r '.agent.name // ""')
-DURATION_MS=$(echo "$input" | jq -r '.cost.total_duration_ms // 0')
-LINES_ADD=$(echo "$input" | jq -r '.cost.total_lines_added // 0')
-LINES_REM=$(echo "$input" | jq -r '.cost.total_lines_removed // 0')
-INPUT_TOKENS=$(echo "$input" | jq -r '.context_window.current_usage.input_tokens // 0')
-CACHE_WRITE=$(echo "$input" | jq -r '.context_window.current_usage.cache_creation_input_tokens // 0')
-CACHE_READ=$(echo "$input" | jq -r '.context_window.current_usage.cache_read_input_tokens // 0')
+AGENT=$(jq_str '.agent.name')
+DURATION_MS=$(jq_num '.cost.total_duration_ms')
+LINES_ADD=$(jq_num '.cost.total_lines_added')
+LINES_REM=$(jq_num '.cost.total_lines_removed')
+INPUT_TOKENS=$(jq_num '.context_window.current_usage.input_tokens')
+CACHE_WRITE=$(jq_num '.context_window.current_usage.cache_creation_input_tokens')
+CACHE_READ=$(jq_num '.context_window.current_usage.cache_read_input_tokens')
 
 # Compute derived values
 REMAINING_TOKENS=$((WINDOW_SIZE * REMAINING_PCT / 100))

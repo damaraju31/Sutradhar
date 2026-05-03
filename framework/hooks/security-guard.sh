@@ -45,7 +45,13 @@ BLOCKED_PATTERNS=(
   'cp .* .*context-health-score'
   'mv .* .*context-health-score'
   '.*> .*file-lock-guard'
+  'sed.*file-lock-guard'
+  'cp .* .*file-lock-guard'
+  'mv .* .*file-lock-guard'
   '.*> .*security-guard'
+  'sed.*security-guard'
+  'cp .* .*security-guard'
+  'mv .* .*security-guard'
 )
 
 for pattern in "${BLOCKED_PATTERNS[@]}"; do
