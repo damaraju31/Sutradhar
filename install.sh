@@ -75,7 +75,6 @@ mkdir -p "$INSTALL_DIR/scripts"
 mkdir -p "$INSTALL_DIR/framework"
 
 # ─── Step 6: Copy files ───────────────────────────────────────────────────────
-cp "$SCRIPT_DIR/SKILL.md"          "$INSTALL_DIR/SKILL.md"
 cp -r "$SCRIPT_DIR/scripts/"       "$INSTALL_DIR/scripts/"
 cp -r "$SCRIPT_DIR/framework/"     "$INSTALL_DIR/framework/"
 
@@ -89,17 +88,29 @@ chmod +x "$INSTALL_DIR/scripts/init.sh"
 find "$INSTALL_DIR/framework/skills" -name "validate.sh" -exec chmod +x {} \;
 find "$INSTALL_DIR/framework/hooks" -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
 
+# ─── Step 6b: Install /project-bootstrap as a global skill ───────────────────
+BOOTSTRAP_DIR="$HOME/.claude/skills/project-bootstrap"
+mkdir -p "$BOOTSTRAP_DIR/references"
+cp "$INSTALL_DIR/framework/skills/project-bootstrap/SKILL.md" "$BOOTSTRAP_DIR/SKILL.md"
+cp "$INSTALL_DIR/framework/skills/project-bootstrap/references/"*.md "$BOOTSTRAP_DIR/references/" 2>/dev/null || true
+success "Installed /project-bootstrap skill globally"
+
 # ─── Step 7: Verify installation ──────────────────────────────────────────────
 FAILED=0
 for f in \
-  "$INSTALL_DIR/SKILL.md" \
   "$INSTALL_DIR/scripts/init.sh" \
   "$INSTALL_DIR/framework/agents/product-cpo.md" \
   "$INSTALL_DIR/framework/agents/engineering-architect.md" \
   "$INSTALL_DIR/framework/commands/launch-team.md" \
-  "$INSTALL_DIR/framework/templates/CLAUDE.md.template" \
+  "$INSTALL_DIR/framework/templates/CLAUDE.md.base.template" \
+  "$INSTALL_DIR/framework/templates/CLAUDE.md.teams.template" \
   "$INSTALL_DIR/framework/templates/settings.json.template" \
-  "$INSTALL_DIR/framework/hooks/security-guard.sh"
+  "$INSTALL_DIR/framework/hooks/security-guard.sh" \
+  "$INSTALL_DIR/framework/hooks/context-maintenance.sh" \
+  "$INSTALL_DIR/framework/hooks/file-lock-guard.sh" \
+  "$INSTALL_DIR/scripts/context-health-score.sh" \
+  "$INSTALL_DIR/framework/templates/context/context-protocol.md" \
+  "$INSTALL_DIR/framework/skills/project-bootstrap/SKILL.md"
 do
   if [ ! -f "$f" ]; then
     error "Missing after install: $f"
@@ -118,13 +129,13 @@ success "Installed $FILE_COUNT files to $INSTALL_DIR"
 
 # ─── Step 8: Success ──────────────────────────────────────────────────────────
 printf "\n${GREEN}${BOLD}agent-team-framework installed successfully.${RESET}\n\n"
-printf "  /project-init is now available in any Claude Code session.\n\n"
+printf "  /project-bootstrap is now available in any Claude Code session.\n\n"
 printf "${BOLD}To get started:${RESET}\n"
 printf "  1. Go to your project:    cd my-project\n"
 printf "  2. Open Claude Code:      claude\n"
-printf "  3. Initialize the team:   /project-init\n\n"
-printf "  Claude will ask for project name, description, tech stack,\n"
-printf "  and which teams to activate. Then it scaffolds everything.\n\n"
+printf "  3. Run:                   /project-bootstrap\n"
+printf "     New projects  -> guided interview + foundation generation.\n"
+printf "     Existing code -> codebase analysis + context hierarchy.\n\n"
 printf "${BOLD}To upgrade later:${RESET}\n"
 printf "  git pull && bash install.sh\n\n"
 printf "${BOLD}To uninstall:${RESET}\n"

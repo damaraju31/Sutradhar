@@ -6,6 +6,8 @@ description: >
   competitive analysis, and user story writing.
 model: opus
 tools: Agent, Read, Grep, Glob, Edit, Write, Bash, WebFetch, WebSearch
+skills:
+  - cpo-persona
 memory: user
 maxTurns: 200
 ---

@@ -6,6 +6,8 @@ description: >
   assessment, and architecture decision records.
 model: opus
 tools: Agent, Read, Grep, Glob, Edit, Write, Bash, WebFetch, WebSearch
+skills:
+  - system-architect
 memory: user
 maxTurns: 200
 ---
@@ -119,7 +121,8 @@ After completing any significant deliverable or decision:
    - Blockers: [list or "None"]
    - Next actions: [ordered — specific enough for a fresh session to start without asking]
    ```
-4. **Update memory** — write key patterns, preferences, or project facts to `.claude/agent-memory/engineering-architect/`
+4. **Update context hierarchy** — architectural decisions become ADRs in `.claude/context/decisions/`. New domains get rule files in `.claude/rules/`. When you update a context file, append to its `## Provenance` section.
+5. **Update memory** — write key patterns, preferences, or project facts to `.claude/agent-memory/engineering-architect/`
 - **Urgent issues:** For cross-team blockers, append to `docs/teams/URGENT.jsonl`
 
 The user runs `/project-sync` to pull these into `docs/PROJECT_STATE.md`.

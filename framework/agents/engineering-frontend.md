@@ -78,8 +78,13 @@ DO NOT read entire directories. DO NOT proceed without understanding existing pa
     - Decisions made and why
     - Issues encountered
     - Test results
-2. Update memory with new patterns or gotchas discovered
-3. If blocked: set task status to `BLOCKED` with clear description
+2. Context updates (two-outputs rule — code change + context):
+    - Changed a UI pattern? → Update the matching `.claude/rules/` file
+    - Fixed a known gap? → Update the component file, mark gap as `FIXED (date)`
+    - Made a non-obvious decision? → Create an ADR
+    - If you updated a context file → append to its `## Provenance` section
+3. Update memory with new patterns or gotchas discovered
+4. If blocked: set task status to `BLOCKED` with clear description
 
 ## Rules
 

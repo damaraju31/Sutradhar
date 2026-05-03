@@ -88,8 +88,13 @@ DO NOT read entire directories. DO NOT proceed without understanding existing pa
     - Issues encountered
     - Test results
 2. Update `docs/teams/engineering/DB_SCHEMA.md` if schema changed
-3. Update memory with new patterns or gotchas discovered
-4. If blocked: set task status to `BLOCKED` with clear description
+3. Context updates (two-outputs rule — code change + context):
+    - Changed a backend pattern? → Update the matching `.claude/rules/` file
+    - Fixed a known gap? → Update the component file, mark gap as `FIXED (date)`
+    - Made a non-obvious decision (schema change, new integration, API contract)? → Create an ADR
+    - If you updated a context file → append to its `## Provenance` section
+4. Update memory with new patterns or gotchas discovered
+5. If blocked: set task status to `BLOCKED` with clear description
 
 ## Rules
 
