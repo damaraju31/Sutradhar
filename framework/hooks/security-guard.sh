@@ -40,6 +40,12 @@ BLOCKED_PATTERNS=(
   '> /dev/sd'
   'chmod -R 777 /'
   'chown -R .* /'
+  '.*> .*context-health-score'
+  'sed.*context-health-score'
+  'cp .* .*context-health-score'
+  'mv .* .*context-health-score'
+  '.*> .*file-lock-guard'
+  '.*> .*security-guard'
 )
 
 for pattern in "${BLOCKED_PATTERNS[@]}"; do
