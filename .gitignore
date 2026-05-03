@@ -1,6 +1,8 @@
-# Development context — local only, not part of the distribution
+# Local development context — not part of the distribution
 spec/
 CLAUDE.md
+docs/dev/
+tests/
 
 # macOS
 .DS_Store
@@ -9,3 +11,9 @@ CLAUDE.md
 .idea/
 .vscode/
 *.swp
+
+# Local Claude Code state
+.claude/agent-memory/
+.claude/settings.local.json
+.claude/context/_modifications.log
+.claude/context/_health_history.log
