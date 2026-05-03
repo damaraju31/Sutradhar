@@ -1,382 +1,172 @@
 # Agent Team Framework
 
-A full AI startup team for every software project — built on Claude Code's native primitives.
+> A multi-agent orchestration harness for [Claude Code](https://claude.ai/code). Tmux-isolated parallel sessions, file-system state sync, lifecycle hooks at PreToolUse / PostToolUse / SubagentStop / SessionStart, and a three-layer context hierarchy that fights lost-in-the-middle attention drift.
 
-**30 agents across 9 teams:** CPO, Architect, Design Lead, DevOps, Security, Analytics, Growth, Business Strategy, and Customer Experience. Install once. Run `/project-init` in any project. Get a team.
+**30 specialized agents across 9 teams.** CPO, Architect, Design Lead, Frontend, Backend, DevOps, Security, Analytics, Growth, Business Strategy, Customer Experience. **9 lifecycle hooks** for security, TDD enforcement, drift tracking, and post-compaction recovery. **19 skills** for context generation, persona reviews, and team-specific workflows. **Single-command install.**
 
-**v1.2:** 12 cultural DNA traits, context-aware agents with budget management, plan-then-clear workflow pattern, enriched statusline with context introspection, and a token budget estimation tool.
+No database. No queue. No vendored runtime. Just primitives Claude Code already exposes — used opinionatedly.
+
+---
+
+## Why this exists
+
+Three failure modes recur in nested-agent workflows:
+
+1. **Context pollution.** Sub-agents inherit the parent's full context, including every prior tool call. After 30-40 turns the working window is mostly noise.
+2. **Lost-in-the-middle.** LLMs follow a U-shaped attention curve — recall at the start and end of a context window is high, the middle is weak. Long planning sessions drop detail.
+3. **Compaction is lossy.** Auto-compaction across `/clear` boundaries silently strips load-bearing context.
+
+This framework picks specific answers to all three: **OS-level isolation** via tmux instead of in-process nesting, **a three-layer context hierarchy** (L0 always-loaded, L1 path-triggered, L2 on-demand) with a **deterministic health-score evaluator** that runs outside the agent, and **a context-recovery hook** that re-injects critical state after compaction.
+
+Full design walkthrough: [`docs/DESIGN_RATIONALE.md`](docs/DESIGN_RATIONALE.md).
 
 ---
 
 ## Prerequisites
 
-- [Claude Code CLI](https://claude.ai/code) installed (`claude --version` works)
-- Claude Max subscription (all usage bills here — no separate API key needed)
+- [Claude Code CLI](https://claude.ai/code) (`claude --version` works)
+- Claude Max subscription (all model usage bills here)
 - macOS or Linux, bash 3.2+, Python 3
-
-> **Important:** This framework uses Claude Code's native agent/skill/command system. It requires the Claude Code CLI — not the API or web interface.
+- `tmux` for parallel team sessions, `jq` recommended (`grep`/`sed` fallback exists)
 
 ---
 
 ## Install
 
 ```bash
-git clone https://github.com/your-username/agent-team-framework.git
+git clone https://github.com/damaraju31/agent-team-framework.git
 cd agent-team-framework
 bash install.sh
 ```
 
-That's it. `/project-init` is now available in every Claude Code session.
+Installs the framework to `~/.claude/skills/project-init/` and registers `/project-bootstrap` globally.
+
+To upgrade: `git pull && bash install.sh`. To remove: `bash uninstall.sh`.
 
 ---
 
-## Quick Start
-
-### 1. Go to your project directory
+## Quick start
 
 ```bash
-cd my-project   # existing project, or an empty directory for a new one
-```
-
-### 2. Open Claude Code and initialize
-
-```bash
+cd my-project        # any directory: greenfield, mid-build, or mature
 claude
 ```
 
 Then in the Claude Code session:
 
 ```
-/project-init
+/project-bootstrap
 ```
 
-Claude will ask four questions:
+Greenfield → guided interview → scaffold. Existing code → 5-phase analysis (Haiku scan → 4 parallel Sonnet analyzers → Opus synthesis → Sonnet generation → Sonnet validation) → context hierarchy written from your actual code.
+
+When at least one team is active:
 
 ```
-Project name?          → my-app
-Description?           → A task management tool for solo developers
-Tech stack?            → Next.js 14, TypeScript, Supabase, Tailwind
-Teams to activate?     → 1, 2, 3  (Product, Engineering, Design — always a good start)
-Coding conventions?    → (optional — add any project-specific rules)
+/launch-team
 ```
 
-After init, your project has a full `.claude/` directory with agents, skills, and commands, plus a `docs/` directory for team outputs.
+Pick tmux (parallel, default), manual (single team), or experimental Agent Teams mode.
 
-### 3. Launch a team
-
-In your control session, run:
-
-```
-/launch-team product
-```
-
-Claude outputs the exact command. **Recommended:** use tmux to manage sessions in separate windows.
-
-```bash
-# In a new tmux window (Ctrl-b c):
-claude --agent product-cpo
-```
-
-> **Alternative:** Open a new terminal tab instead of a tmux window — the framework works either way. tmux is recommended because you can script window creation and keep all sessions visible in one terminal.
-
-The CPO is live. Start with:
-
-```
-/product-ideate   → structure your raw idea
-/product-prd      → write the PRD
-```
-
-### 4. Sync state (back in your control session)
-
-After the CPO team produces output:
-
-```
-/project-sync     → merge team updates into PROJECT_STATE.md
-/project-status   → full status report across all teams
-```
-
-### 5. Launch the next team
-
-Once the PRD is approved:
-
-```
-/launch-team engineering   → gets the Architect session command
-/launch-team design        → gets the Design Lead session command
-```
-
-Run each in a new tmux window (or terminal tab).
+Full operator's guide: [`docs/USAGE.md`](docs/USAGE.md).
 
 ---
 
-## How It Works
-
-### The Session Model
-
-You are the CEO. Each team runs as an independent `claude --agent` session in its own tmux window (or terminal tab). You switch between windows to interact with different teams — like switching Slack channels, but each "channel" is an expert AI agent with persistent memory and a team of subagents.
+## Architecture
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│                    YOU (CEO / CTO)                            │
-│     Switches between tmux windows (or tabs)                  │
-│                                                               │
-│  Window 1: Control Session    Window 2: CPO Session          │
-│  ┌─────────────────────┐     ┌────────────────────────┐      │
-│  │ claude               │     │ claude --agent          │      │
-│  │                      │     │   product-cpo           │      │
-│  │ /project-init        │     │                         │      │
-│  │ /launch-team         │     │ Spawns via Agent tool:  │      │
-│  │ /project-sync        │     │ ├── product-researcher  │      │
-│  │ /project-status      │     │ └── product-apm         │      │
-│  └─────────────────────┘     └────────────────────────┘      │
-│                                                               │
-│  Window 3: Architect Session  Window 4: Design Session       │
-│  ┌─────────────────────┐     ┌────────────────────────┐      │
-│  │ claude --agent       │     │ claude --agent          │      │
-│  │   engineering-       │     │   design-lead           │      │
-│  │   architect          │     │                         │      │
-│  └─────────────────────┘     └────────────────────────┘      │
-│                                                               │
-│   All sessions share docs/ on disk. File-based coordination. │
-└──────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│  tmux session                                                   │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐           │
+│  │ window: prod │  │ window: eng  │  │ window: dev  │  ...      │
+│  │ CPO (opus)   │  │ Architect    │  │ DevOps       │           │
+│  │              │  │ (opus)       │  │ (sonnet)     │           │
+│  │  └─ subagent │  │  └─ subagent │  │              │           │
+│  │  └─ subagent │  │  └─ subagent │  │              │           │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘           │
+│         │                 │                 │                   │
+│  ───────▼─────────────────▼─────────────────▼─────────────      │
+│         file-system state sync (no DB, no queue)                │
+│  ───────┬─────────────────┬─────────────────┬─────────────      │
+│         │                 │                 │                   │
+│         └────► docs/teams/<team>/STATE_UPDATE.md                │
+│                docs/teams/URGENT.jsonl                          │
+│                docs/PROJECT_STATE.md  (reconciled by user)      │
+└─────────────────────────────────────────────────────────────────┘
+
+  Lifecycle hooks injected at every CLI event:
+   PreToolUse  → security-guard, file-lock-guard
+   PostToolUse → context-maintenance, track-changes
+   SubagentStop → code-quality-gate (TDD), notify-completion, ensure-state-update
+   SessionStart → context-recovery (re-injects state after compaction)
+   Per turn   → statusline (real-time observability)
+
+  Context hierarchy:
+   L0  CLAUDE.md                       always loaded     ≤100 lines
+   L1  .claude/rules/*.md              auto on Read      ≤50 lines each
+   L2  .claude/context/components/     on-demand         ≤150 lines each
+       .claude/context/decisions/      on-demand (ADRs)  ≤30 lines each
+
+  Cost-aware model routing:
+   Opus     → strategic agents (Architect, CPO, Design Lead, Business)
+   Sonnet   → workforce (Frontend, Backend, Reviewer, Tester) — ~80% of work
+   Haiku    → disposable scouts (Tech Explorer, monitoring, budget analysis)
 ```
 
-### Head Agents and Subagents
-
-Each team has a **head agent** (CPO, Architect, Design Lead, etc.) that runs at the Opus model level. Head agents think strategically and delegate detailed work to **subagents** from their team using Claude Code's built-in Agent tool.
-
-Each subagent runs in an isolated context window — only the summary returns to the head agent. This prevents context bloat across long sessions and keeps each specialist focused on their scope.
-
-### File-Based State — No Hidden State
-
-Teams don't use APIs or messages to coordinate. They write output to `docs/teams/{team}/`. You run `/project-sync` to merge updates into the shared `docs/PROJECT_STATE.md`.
-
-Every agent reads `CLAUDE.md` and `PROJECT_STATE.md` on session start — so a fresh session always picks up exactly where the last one left off. **All state is readable files in your project.**
+Deeper dive: [`docs/CONTEXT_HIERARCHY.md`](docs/CONTEXT_HIERARCHY.md), [`docs/DESIGN_RATIONALE.md`](docs/DESIGN_RATIONALE.md).
 
 ---
 
-## The 9 Teams
+## What's inside
 
-Teams are organized into three activation tiers. Activate what you need, when you need it.
+| Surface | Count | Path |
+|---------|------:|------|
+| Agent specifications | 30 | `framework/agents/*.md` |
+| Composable skills | 19 | `framework/skills/<skill>/SKILL.md` |
+| Slash commands | 6 | `framework/commands/*.md` |
+| Lifecycle hooks | 9 | `framework/hooks/*.sh` |
+| Context-layer templates | 5 | `framework/templates/context/` |
+| Context-health evaluator | 636 LOC | `scripts/context-health-score.sh` |
+| Token budgeting tool | — | `scripts/token-counter.py` |
 
-### Tier 1: Core Build (activate at project start)
-
-| Team | Head Agent | Model | Subagents | Primary Output |
-|------|-----------|-------|-----------|---------------|
-| **Product** | `product-cpo` | Opus | researcher, apm | PRD, user stories, competitive analysis |
-| **Engineering** | `engineering-architect` | Opus | frontend, backend, reviewer, tester, tech-explorer | Architecture, code, reviews |
-| **Design** | `design-lead` | Opus | ux-researcher, ui-spec | Design system, UX flows, component specs |
-| **DevOps** | `devops-lead` | Sonnet | infra, monitoring | CI/CD pipeline, deploy config, infra spec |
-
-### Tier 2: Growth (activate post-MVP)
-
-| Team | Head Agent | Model | Subagents | Primary Output |
-|------|-----------|-------|-----------|---------------|
-| **Growth** | `growth-lead` | Sonnet | seo, landing | GTM strategy, launch plan |
-| **CX** | `cx-lead` | Sonnet | docs, feedback | Documentation, support flows |
-| **Analytics** | `analytics-lead` | Sonnet | analyst | Metrics plan, event schemas |
-
-### Tier 3: Operations (activate for scaling / fundraising)
-
-| Team | Head Agent | Model | Subagents | Primary Output |
-|------|-----------|-------|-----------|---------------|
-| **Business** | `business-strategist` | Opus | analyst, pitch | Revenue model, financial projections |
-| **Security** | `security-lead` | Sonnet | auditor, privacy | Threat model, security audit |
-
-Teams can be added or removed at any time:
-```
-/project-activate-team security
-/project-deactivate-team cx
-```
+The framework is the distributable: clone the repo, `install.sh` copies it to `~/.claude/skills/project-init/`. Edits to `framework/` flow through to all installed projects on the next install run.
 
 ---
 
-## Build Workflow
+## Roadmap
 
-Skills are invoked inside team sessions. The phases enforce order — each phase produces artifacts that downstream phases depend on.
+Currently single-machine, CLI-only, single-developer. Items below are explicitly *deferred*, not abandoned:
 
-```
-Phase 0: Ideation
-  └── /product-ideate               → Structured idea analysis
-
-Phase 1: Specification  (run in order — each feeds the next)
-  ├── /product-prd                  → PRD (gates Engineering + Design)
-  ├── /design-system                → Design tokens and system
-  ├── /design-ux-flows              → User journey maps
-  ├── /engineering-architect        → Technical architecture + ADRs
-  └── /design-ui-spec               → Per-component specifications
-
-Phase 2: Build  (engineering session — repeats per feature)
-  ├── /engineering-scaffold         → Project structure (once)
-  ├── /devops-cicd                  → CI/CD pipeline (once)
-  ├── /engineering-implement        → Feature implementation
-  └── /engineering-review           → Code review
-
-Phase 3: Launch Prep
-  ├── /devops-deploy                → Deployment configuration
-  ├── /growth-launch-plan           → GTM strategy (if Growth active)
-  └── /engineering-review           → Final comprehensive review
-
-Phase 4: Post-Launch
-  ├── Analytics setup               (if Analytics active)
-  └── CX documentation setup        (if CX active)
-```
-
-**Phase gates are enforced.** `/launch-team engineering` won't run until `docs/teams/product/PRD.md` exists. This is intentional — each team's work depends on the previous team's output. If you get blocked, `/launch-team` will tell you exactly what to produce first.
+- **Multi-host orchestration.** v0.1 is single-machine via tmux by design — keeps the human as the serialization point. Multi-host needs a coordinator and conflict resolution layer.
+- **Provider abstraction.** Built specifically for Claude Code's lifecycle hooks, Agent tool, and skill system. Portability would require abstracting the CLI layer.
+- **Web UI / dashboard.** CLI-only. Real-time observability lives in the statusline.
+- **Examples library.** Worked end-to-end demos (build a SaaS MVP, wire a custom security hook, etc.) coming in a follow-up.
+- **Comparison page** vs. CrewAI / AutoGen / LangGraph — opinionated positioning doc.
+- **MCP server wrapper** — expose the hooks/state surface so other Claude Code instances can integrate.
+- **Phoenix / observability export** — agent traces to a tracing backend.
 
 ---
 
-## Commands Reference
+## Documentation
 
-All commands run in your **control session** (tmux window 1 or Tab 1 — plain `claude` without `--agent`).
-
-| Command | When | What It Does |
-|---------|------|-------------|
-| `/project-init` | Once, before any teams | Scaffolds `.claude/`, `docs/`, team directories, copies all agents/skills/commands |
-| `/launch-team <name>` | When starting a team | Checks prerequisites, outputs the exact `claude --agent` command to run |
-| `/project-status` | Anytime | Full status report: phases, blockers, recent team output |
-| `/project-sync` | After a team completes work | Reads `STATE_UPDATE.md` from each team, merges into `PROJECT_STATE.md` |
-| `/project-activate-team <name>` | Adding a team mid-project | Adds team to `CLAUDE.md`, copies its agents and skills |
-| `/project-deactivate-team <name>` | Pausing a team | Removes from active list, archives team docs |
-| `/stop-all` | When shutting down | Signals all running team sessions to stop gracefully |
-
-**Team names for `/launch-team`:** `product`, `engineering`, `design`, `devops`, `growth`, `cx`, `analytics`, `business`, `security`
-
----
-
-## Project File Structure
-
-After `/project-init`, your project looks like this:
-
-```
-your-project/
-├── CLAUDE.md                          ← Auto-loaded by every agent (project identity + conventions)
-│
-├── docs/
-│   ├── PROJECT_STATE.md               ← Single source of truth: current phase, blockers, decisions
-│   ├── ARCHITECTURE.md                ← Created by Engineering team
-│   ├── tasks/
-│   │   ├── TASK.md.template           ← Copy this when Architect creates task files for coders
-│   │   └── completed/                 ← Completed task files move here
-│   ├── reviews/                       ← Code review reports from engineering-reviewer
-│   └── teams/
-│       ├── product/
-│       │   ├── TEAM_BRIEF.md          ← Team mission and current status
-│       │   ├── PRD.md                 ← Product Requirements Document
-│       │   └── USER_STORIES.md
-│       ├── engineering/
-│       │   ├── TECH_SPEC.md
-│       │   ├── API_DESIGN.md
-│       │   └── ADR/                   ← Architecture Decision Records
-│       ├── design/
-│       │   ├── DESIGN_SYSTEM.md
-│       │   ├── UX_FLOWS.md
-│       │   └── UI_SPEC.md
-│       ├── ACTIVITY.log               ← Append-only log of cross-team events
-│       └── URGENT.jsonl               ← Urgent signals between sessions
-│
-└── .claude/
-    ├── agents/                        ← 30 agent definition files (edit to customize)
-    ├── skills/                        ← 13 skill workflows with templates
-    ├── commands/                      ← 6 control commands
-    ├── hooks/                         ← 7 hook scripts (statusline, activity logging, state sync)
-    └── settings.json                  ← Hook + statusline configuration
-```
-
----
-
-## Customization
-
-### Edit Agent Prompts — Instantly
-
-After `/project-init`, open any agent file in `.claude/agents/`. The markdown body **is** the system prompt. Edit it and the change takes effect on the next session start — no restart, no rebuild.
-
-```bash
-# Make the CPO more opinionated about your specific domain
-open .claude/agents/product-cpo.md
-
-# Make the reviewer enforce your team's specific style rules
-open .claude/agents/engineering-reviewer.md
-```
-
-### Add Your Own Agents
-
-Create `.claude/agents/my-agent.md` with a YAML frontmatter block:
-
-```yaml
----
-name: my-agent
-model: claude-sonnet-4-5-20250929
-tools: Read, Grep, Glob, Edit, Write, Bash
----
-
-Your agent's system prompt goes here.
-```
-
-It's immediately available: `claude --agent my-agent`
-
-### Customize Skills and Templates
-
-Skill templates are in `.claude/skills/{skill-name}/templates/`. Edit them to match your team's format — your company's PRD structure, your team's review checklist, your deploy runbook. The master copies in `~/.claude/skills/project-init/framework/` are untouched.
-
-### Per-Project Isolation
-
-Every file in `.claude/` is project-local. Changes to one project's agents never affect other projects. The master copies at `~/.claude/skills/project-init/` are only used when running `/project-init` in a new project.
-
----
-
-## Resuming Sessions
-
-Agents are designed to self-orient on startup. Even a fresh session picks up context because every agent reads `CLAUDE.md` and `docs/PROJECT_STATE.md` before acting.
-
-```bash
-# Fresh session — agent re-reads project context on start
-claude --agent engineering-architect
-
-# Resume a specific session by ID (faster startup, no re-orientation needed)
-claude --agent engineering-architect -r SESSION_ID
-```
-
-Session IDs are logged by Claude Code on session start, or browse `~/.claude/projects/` for history.
-
----
-
-## Upgrade
-
-```bash
-cd agent-team-framework
-git pull
-bash install.sh
-```
-
-`install.sh` backs up your current install before overwriting. Existing project `.claude/` directories are **not touched** — they are yours to edit and own.
-
----
-
-## Troubleshooting
-
-| Problem | Fix |
-|---------|-----|
-| `/project-init` not found | Confirm install: `ls ~/.claude/skills/project-init/SKILL.md` |
-| "PRD not found" when launching Engineering | Run `/product-prd` in the Product team session first |
-| Agent spawns wrong subagents | Check `tools:` field in `.claude/agents/{head-agent}.md` — an `Agent(agent1,agent2)` allowlist may be missing an agent name |
-| `init.sh` fails: "python3 not found" | `brew install python3` (macOS) or `apt install python3` (Linux) |
-| State looks stale after switching sessions | Run `/project-sync` in your control session, then launch a fresh team session |
-| Want to reset a team's brief | Edit `docs/teams/{team}/TEAM_BRIEF.md` directly — agents read it on startup |
-
----
-
-## Uninstall
-
-```bash
-bash uninstall.sh
-```
-
-Removes `~/.claude/skills/project-init/`. Does not touch any project `.claude/` directories.
+| Doc | Purpose |
+|-----|---------|
+| [`docs/USAGE.md`](docs/USAGE.md) | Install, bootstrap, run teams, add agents/hooks, troubleshooting |
+| [`docs/DESIGN_RATIONALE.md`](docs/DESIGN_RATIONALE.md) | Why the framework is built this way — design choices, trade-offs |
+| [`docs/CONTEXT_HIERARCHY.md`](docs/CONTEXT_HIERARCHY.md) | L0/L1/L2 spec, file structure, drift management |
+| `framework/agents/*.md` | 30 worked agent specifications |
+| `framework/hooks/*.sh` | 9 worked lifecycle hooks |
+| `framework/commands/*.md` | 6 slash command implementations |
+| `framework/skills/*/SKILL.md` | 19 composable skills |
 
 ---
 
 ## Contributing
 
-PRs welcome. The implementation philosophy: agents are files, skills are folders, state is docs. Keep it simple.
+Issues and PRs welcome. The framework is opinionated by design — proposals that change the core invariants (single-machine, file-system sync, no provider abstraction) need a strong case. See [`CONTRIBUTING.md`](CONTRIBUTING.md) (forthcoming) for issue templates.
 
-Read `framework/agents/engineering-architect.md` for the agent format reference. Read `framework/skills/product-prd/SKILL.md` for the skill format reference.
+---
+
+## License
+
+MIT. See [`LICENSE`](LICENSE).
