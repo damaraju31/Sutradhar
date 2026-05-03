@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# uninstall.sh — Remove agent-team-framework from ~/.claude/skills/project-init/
+# uninstall.sh — Remove Sutradhar from ~/.claude/skills/project-init/
 # Usage: bash uninstall.sh
 
 set -u
@@ -35,6 +35,6 @@ fi
 # ─── Remove ───────────────────────────────────────────────────────────────────
 rm -rf "$INSTALL_DIR"
 
-printf "\n${GREEN}${BOLD}agent-team-framework uninstalled.${RESET}\n"
+printf "\n${GREEN}${BOLD}Sutradhar uninstalled.${RESET}\n"
 printf "  Removed: $INSTALL_DIR\n"
 printf "  Your existing projects are unchanged.\n\n"

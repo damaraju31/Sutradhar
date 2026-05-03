@@ -1,5 +1,7 @@
-# Agent Team Framework
+# Sutradhar
 
+> *Sutradhar* (Sanskrit, सूत्रधार) — *thread-holder*, the director in classical Indian theatre who orchestrates the play.
+>
 > A multi-agent orchestration harness for [Claude Code](https://claude.ai/code). Tmux-isolated parallel sessions, file-system state sync, lifecycle hooks at PreToolUse / PostToolUse / SubagentStop / SessionStart, and a three-layer context hierarchy that fights lost-in-the-middle attention drift.
 
 **30 specialized agents across 9 teams.** CPO, Architect, Design Lead, Frontend, Backend, DevOps, Security, Analytics, Growth, Business Strategy, Customer Experience. **9 lifecycle hooks** for security, TDD enforcement, drift tracking, and post-compaction recovery. **19 skills** for context generation, persona reviews, and team-specific workflows. **Single-command install.**
@@ -34,8 +36,8 @@ Full design walkthrough: [`docs/DESIGN_RATIONALE.md`](docs/DESIGN_RATIONALE.md).
 ## Install
 
 ```bash
-git clone https://github.com/damaraju31/agent-team-framework.git
-cd agent-team-framework
+git clone https://github.com/damaraju31/sutradhar.git
+cd sutradhar
 bash install.sh
 ```
 

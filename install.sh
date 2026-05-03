@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh — Install agent-team-framework to ~/.claude/skills/project-init/
+# install.sh — Install Sutradhar to ~/.claude/skills/project-init/
 # Usage: bash install.sh
 
 set -u
@@ -78,6 +78,9 @@ mkdir -p "$INSTALL_DIR/framework"
 cp -r "$SCRIPT_DIR/scripts/"       "$INSTALL_DIR/scripts/"
 cp -r "$SCRIPT_DIR/framework/"     "$INSTALL_DIR/framework/"
 
+# Strip macOS metadata that may have hitchhiked from the source tree
+find "$INSTALL_DIR" -name ".DS_Store" -delete 2>/dev/null || true
+
 # Copy VERSION file
 if [ -f "$SCRIPT_DIR/VERSION" ]; then
   cp "$SCRIPT_DIR/VERSION" "$INSTALL_DIR/VERSION"
@@ -120,7 +123,7 @@ done
 
 if [ "$FAILED" -eq 1 ]; then
   error "Installation incomplete. The repo may not have been fully cloned."
-  info  "Try: git clone --depth 1 <repo-url> && cd agent-team-framework && bash install.sh"
+  info  "Try: git clone --depth 1 https://github.com/damaraju31/sutradhar.git && cd sutradhar && bash install.sh"
   exit 1
 fi
 
@@ -128,7 +131,7 @@ FILE_COUNT=$(find "$INSTALL_DIR" -type f | wc -l | tr -d ' ')
 success "Installed $FILE_COUNT files to $INSTALL_DIR"
 
 # ─── Step 8: Success ──────────────────────────────────────────────────────────
-printf "\n${GREEN}${BOLD}agent-team-framework installed successfully.${RESET}\n\n"
+printf "\n${GREEN}${BOLD}Sutradhar installed successfully.${RESET}\n\n"
 printf "  /project-bootstrap is now available in any Claude Code session.\n\n"
 printf "${BOLD}To get started:${RESET}\n"
 printf "  1. Go to your project:    cd my-project\n"
