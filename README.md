@@ -2,7 +2,8 @@
 
 > *Sutradhar* (Sanskrit, सूत्रधार) — *thread-holder*, the director in classical Indian theatre who orchestrates the play.
 >
-> A multi-agent orchestration harness for [Claude Code](https://claude.ai/code). Tmux-isolated parallel sessions, file-system state sync, lifecycle hooks at PreToolUse / PostToolUse / SubagentStop / SessionStart, and a three-layer context hierarchy that fights lost-in-the-middle attention drift.
+
+Tmux-isolated multi-agent orchestration framework on Claude Code — file-system state sync, lifecycle hooks, cost-aware routing.
 
 **30 specialized agents across 9 teams.** CPO, Architect, Design Lead, Frontend, Backend, DevOps, Security, Analytics, Growth, Business Strategy, Customer Experience. **9 lifecycle hooks** for security, TDD enforcement, drift tracking, and post-compaction recovery. **19 skills** for context generation, persona reviews, and team-specific workflows. **Single-command install.**
 
